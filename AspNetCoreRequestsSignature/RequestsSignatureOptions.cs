@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace AspNetCoreRequestsSignature
 {
@@ -17,8 +18,8 @@ namespace AspNetCoreRequestsSignature
         /// <summary>
         /// Gets the default <see cref="SignaturePattern"/> ({ClientId}:{Nonce}:{Timestamp}:{Signature}).
         /// </summary>
-        public const string DefaultSignaturePattern =
-            PatternTags.ClientIdTag + ":" + PatternTags.NonceTag + ":" + PatternTags.TimestampTag + ":" + PatternTags.SignatureTag;
+        public static readonly Regex DefaultSignaturePattern
+            = new Regex(@"^(?<ClientId>[^:]+):(?<Nonce>[^:]+):(?<Timestamp>[\d]+):(?<Signature>[^:]+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
         /// <summary>
         /// Gets the default <see cref="ClockSkew"/> (5 minutes).
@@ -50,9 +51,9 @@ namespace AspNetCoreRequestsSignature
         public string HeaderName { get; set; } = DefaultHeaderName;
 
         /// <summary>
-        /// Gets or sets the overral pattern for the signature.
+        /// Gets or sets the overral <see cref="Regex"/> pattern for the signature.
         /// Defaults to <see cref="DefaultSignaturePattern"/> ({ClientId}:{Nonce}:{Timestamp}:{Signature}).
         /// </summary>
-        public string SignaturePattern { get; set; } = DefaultSignaturePattern;
+        public Regex SignaturePattern { get; set; } = DefaultSignaturePattern;
     }
 }

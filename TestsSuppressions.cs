@@ -7,4 +7,5 @@
 [assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1611:Element parameters must be documented", Justification = "Not needed for tests projects")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1063:Implement IDisposable correctly", Justification = "Not needed for tests projects")]
 [assembly: SuppressMessage("Microsoft.Usage", "CA1816:Call GC.SuppressFinalize correctly", Justification = "Not needed for tests projects")]
+[assembly: SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Not needed for tests projects")]
 [assembly: SuppressMessage("Usage", "CA2234:Pass system uri objects instead of strings", Justification = "String is fine - Uri class is sometime cumbersome.")]
