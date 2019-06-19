@@ -13,7 +13,7 @@ namespace RequestsSignature.AspNetCore.Services
     /// <summary>
     /// <see cref="IRequestsSignatureValidationService"/> default implementation.
     /// </summary>
-    public class RequestsSignatureValidationService : IRequestsSignatureValidationService
+    internal class RequestsSignatureValidationService : IRequestsSignatureValidationService
     {
         private readonly IOptionsMonitor<RequestsSignatureOptions> _optionsMonitor;
         private readonly IRequestSigner _requestSigner;
@@ -57,6 +57,15 @@ namespace RequestsSignature.AspNetCore.Services
 
             var serverTimestamp = _clock.GetCurrentInstant().ToUnixTimeSeconds();
             SignatureValidationResult result;
+
+            if (_options.Disabled)
+            {
+                result = new SignatureValidationResult(
+                    SignatureValidationResultStatus.Disabled,
+                    serverTimestamp);
+                _logger.SignatureValidationIgnored(result);
+                return result;
+            }
 
             var headerValue = request.Headers[_options.HeaderName];
             if (string.IsNullOrWhiteSpace(headerValue))
@@ -155,6 +164,11 @@ namespace RequestsSignature.AspNetCore.Services
         private void OnOptionsChange(RequestsSignatureOptions options)
         {
             _options = options;
+
+            if (options.Disabled)
+            {
+                return;
+            }
 
             if (string.IsNullOrWhiteSpace(_options.HeaderName))
             {

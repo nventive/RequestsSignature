@@ -6,7 +6,7 @@ namespace RequestsSignature.AspNetCore.Services
     /// <summary>
     /// Helper class that manages <see cref="ILogger"/> events for <see cref="RequestsSignatureValidationService"/>.
     /// </summary>
-    public static class RequestsSignatureValidationServiceLoggerExtensions
+    internal static class RequestsSignatureValidationServiceLoggerExtensions
     {
         private const string SignatureValidationFailedMessageFormat = @"Request Signature Failed: {Status}
 ServerTimestamp: {ServerTimestamp}
@@ -14,16 +14,22 @@ Signature: {SignatureValue}
 ClientId: {ClientId}
 ComputedSignature: {ComputedSignature}";
 
-        private static readonly Action<ILogger, string, Exception> _signatureValidationSucceeded =
-            LoggerMessage.Define<string>(
+        private static readonly Action<ILogger, SignatureValidationResultStatus, string, Exception> _signatureValidationSucceeded =
+            LoggerMessage.Define<SignatureValidationResultStatus, string>(
                 LogLevel.Trace,
                 new EventId(500, "SignatureValidationSucceeded"),
-                @"Signature Validation Succeeded. ClientId: {ClientId}");
+                @"Signature Validation Succeeded ({Status}). ClientId: {ClientId}");
+
+        private static readonly Action<ILogger, SignatureValidationResultStatus, Exception> _signatureValidationIgnored =
+            LoggerMessage.Define<SignatureValidationResultStatus>(
+                LogLevel.Information,
+                new EventId(501, "SignatureValidationIgnored"),
+                @"Signature validation ignored: {Status}");
 
         private static readonly Action<ILogger, SignatureValidationResultStatus, long, string, string, string, Exception> _signatureValidationFailed =
             LoggerMessage.Define<SignatureValidationResultStatus, long, string, string, string>(
-                LogLevel.Error,
-                new EventId(501, "SignatureValidationFailed"),
+                LogLevel.Warning,
+                new EventId(510, "SignatureValidationFailed"),
                 SignatureValidationFailedMessageFormat);
 
         /// <summary>
@@ -36,7 +42,22 @@ ComputedSignature: {ComputedSignature}";
         {
             _signatureValidationSucceeded(
                 logger,
+                result?.Status ?? SignatureValidationResultStatus.OK,
                 result?.ClientId,
+                ex);
+        }
+
+        /// <summary>
+        /// Logs an ignored signature validation.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/>.</param>
+        /// <param name="result">The <see cref="SignatureValidationResult"/>.</param>
+        /// <param name="ex">The <see cref="Exception"/>, if any.</param>
+        public static void SignatureValidationIgnored(this ILogger logger, SignatureValidationResult result, Exception ex = null)
+        {
+            _signatureValidationIgnored(
+                logger,
+                result?.Status ?? SignatureValidationResultStatus.Disabled,
                 ex);
         }
 

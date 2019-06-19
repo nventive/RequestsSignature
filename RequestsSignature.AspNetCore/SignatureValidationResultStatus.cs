@@ -1,10 +1,15 @@
-﻿namespace RequestsSignature.AspNetCore.Services
+﻿namespace RequestsSignature.AspNetCore
 {
     /// <summary>
     /// The status for a <see cref="SignatureValidationResult"/>.
     /// </summary>
     public enum SignatureValidationResultStatus
     {
+        /// <summary>
+        /// The signature validation is disabled.
+        /// </summary>
+        Disabled,
+
         /// <summary>
         /// The signature is valid.
         /// </summary>

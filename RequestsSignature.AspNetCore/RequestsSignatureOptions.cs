@@ -11,6 +11,11 @@ namespace RequestsSignature.AspNetCore
     public class RequestsSignatureOptions
     {
         /// <summary>
+        /// Gets the default <see cref="Disabled"/> value (false).
+        /// </summary>
+        public const bool DefaultDisabled = false;
+
+        /// <summary>
         /// Gets the default <see cref="HeaderName"/> (X-RequestSignature).
         /// </summary>
         public const string DefaultHeaderName = "X-RequestSignature";
@@ -27,6 +32,11 @@ namespace RequestsSignature.AspNetCore
         public static readonly TimeSpan DefaultClockSkew = TimeSpan.FromMinutes(5);
 
         private IEnumerable<RequestsSignatureClientOptions> _clients;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the requests signature validation is disabled.
+        /// </summary>
+        public bool Disabled { get; set; } = DefaultDisabled;
 
         /// <summary>
         /// Gets or sets individual <see cref="RequestsSignatureClientOptions"/>.

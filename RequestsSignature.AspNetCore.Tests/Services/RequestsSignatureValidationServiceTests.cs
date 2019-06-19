@@ -19,6 +19,24 @@ namespace RequestsSignature.AspNetCore.Tests.Services
         private const string ClientKey = "ClientKey";
 
         [Fact]
+        public async Task ItShouldHonorDisabledOptions()
+        {
+            var optionsMonitor = CreateOptionsMonitor(options =>
+            {
+                options.Disabled = true;
+            });
+            var requestSignerMock = new Mock<IRequestSigner>();
+            var service = new RequestsSignatureValidationService(
+                optionsMonitor,
+                requestSignerMock.Object);
+
+            var httpRequest = new DefaultHttpRequest(new DefaultHttpContext());
+            var result = await service.Validate(httpRequest);
+
+            result.Status.Should().Be(SignatureValidationResultStatus.Disabled);
+        }
+
+        [Fact]
         public async Task ItShouldValidateHeaderPresence()
         {
             var optionsMonitor = CreateOptionsMonitor();
