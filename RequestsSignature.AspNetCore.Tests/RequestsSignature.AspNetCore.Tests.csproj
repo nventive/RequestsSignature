@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AspNetCoreRequestsSignature\AspNetCoreRequestsSignature.csproj" />
+    <ProjectReference Include="..\RequestsSignature.AspNetCore\RequestsSignature.AspNetCore.csproj" />
   </ItemGroup>
 
 </Project>

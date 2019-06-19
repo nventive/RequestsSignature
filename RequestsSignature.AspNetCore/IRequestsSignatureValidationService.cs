@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace AspNetCoreRequestsSignature
+namespace RequestsSignature.AspNetCore
 {
     /// <summary>
     /// Validates signature of <see cref="HttpRequest"/>.

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NodaTime;
 
-namespace AspNetCoreRequestsSignature
+namespace RequestsSignature.AspNetCore
 {
     /// <summary>
     /// <see cref="IRequestsSignatureValidationService"/> default implementation.

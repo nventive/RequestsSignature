@@ -1,6 +1,6 @@
-# AspNetCoreRequestsSignature
+# RequestsSignature
 
-{Project tag line}
+Signs and validates HTTP requests.
 
 {Small description of the purpose of the project}
 

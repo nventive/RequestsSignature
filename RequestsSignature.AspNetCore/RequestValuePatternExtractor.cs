@@ -3,7 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace AspNetCoreRequestsSignature
+namespace RequestsSignature.AspNetCore
 {
     /// <summary>
     /// Helper class to extract values from a <see cref="HttpRequest"/> using a pattern.

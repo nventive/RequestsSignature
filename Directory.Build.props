@@ -2,10 +2,10 @@
   <!-- Common properties for all projects -->
   <PropertyGroup>
     <Authors>nventive</Authors>
-    <Description>ASP.NET Core middleware that can validate requests using HMAC signature</Description>
+    <Description>Signs and validates HTTP requests</Description>
     <Copyright>Copyright (c) 2019, nventive</Copyright>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <Product>AspNetCoreRequestsSignature</Product>
+    <Product>RequestsSignature</Product>
     <LangVersion>7.3</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />

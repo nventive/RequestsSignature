@@ -1,4 +1,4 @@
-﻿namespace AspNetCoreRequestsSignature
+﻿namespace RequestsSignature.AspNetCore
 {
     /// <summary>
     /// Signature options for a specific client.

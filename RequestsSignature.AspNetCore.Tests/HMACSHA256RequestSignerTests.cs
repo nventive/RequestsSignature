@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Xunit;
 
-namespace AspNetCoreRequestsSignature.Tests
+namespace RequestsSignature.AspNetCore.Tests
 {
     public class HMACSHA256RequestSignerTests
     {
