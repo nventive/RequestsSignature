@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 
-namespace RequestsSignature.AspNetCore
+namespace RequestsSignature.AspNetCore.Services
 {
     /// <summary>
     /// Helper class that manages <see cref="ILogger"/> events for <see cref="RequestsSignatureValidationService"/>.

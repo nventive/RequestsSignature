@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace RequestsSignature.AspNetCore
+namespace RequestsSignature.AspNetCore.Services
 {
     /// <summary>
     /// Holds parameters for signing a request.

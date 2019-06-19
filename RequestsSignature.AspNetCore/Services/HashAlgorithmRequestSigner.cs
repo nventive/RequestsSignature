@@ -2,9 +2,8 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
-namespace RequestsSignature.AspNetCore
+namespace RequestsSignature.AspNetCore.Services
 {
     /// <summary>
     /// <see cref="IRequestSigner"/> implementation that uses <see cref="HashAlgorithm"/>.

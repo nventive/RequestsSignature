@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NodaTime;
 
-namespace RequestsSignature.AspNetCore
+namespace RequestsSignature.AspNetCore.Services
 {
     /// <summary>
     /// <see cref="IRequestsSignatureValidationService"/> default implementation.
@@ -85,7 +85,7 @@ namespace RequestsSignature.AspNetCore
                 ClientId = headerMatch.Groups["ClientId"]?.Value,
                 Nonce = headerMatch.Groups["Nonce"]?.Value,
                 Timestamp = long.Parse(headerMatch.Groups["Timestamp"]?.Value ?? "0", CultureInfo.InvariantCulture),
-                Signature = headerMatch.Groups["Nonce"]?.Value,
+                Signature = headerMatch.Groups["Signature"]?.Value,
             };
 
             var clientOptions = _options.Clients.FirstOrDefault(x => string.Equals(x.ClientId, signatureComponents.ClientId, StringComparison.Ordinal));
@@ -181,6 +181,11 @@ namespace RequestsSignature.AspNetCore
                 if (string.IsNullOrEmpty(clientOptions.Key))
                 {
                     throw new RequestsSignatureException($"Property {nameof(clientOptions.Key)} is null or empty for client {clientOptions.ClientId}.");
+                }
+
+                if (!clientOptions.SignatureBodySourceComponents.Any())
+                {
+                    throw new RequestsSignatureException($"Property {nameof(clientOptions.SignatureBodySourceComponents)} is empty for client {clientOptions.ClientId}. No signature can be computed.");
                 }
             }
         }

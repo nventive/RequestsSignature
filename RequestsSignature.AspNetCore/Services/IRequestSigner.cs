@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
-namespace RequestsSignature.AspNetCore
+namespace RequestsSignature.AspNetCore.Services
 {
     /// <summary>
     /// Computes signature for requests.

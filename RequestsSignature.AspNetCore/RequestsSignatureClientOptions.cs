@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using SC = RequestsSignature.AspNetCore.SignatureBodySourceComponents;
+using SC = RequestsSignature.AspNetCore.Services.SignatureBodySourceComponents;
 
 namespace RequestsSignature.AspNetCore
 {

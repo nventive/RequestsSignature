@@ -1,4 +1,4 @@
-﻿namespace RequestsSignature.AspNetCore
+﻿namespace RequestsSignature.AspNetCore.Services
 {
     /// <summary>
     /// The status for a <see cref="SignatureValidationResult"/>.

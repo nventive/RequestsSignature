@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
+using RequestsSignature.AspNetCore.Services;
 using Xunit;
 
-namespace RequestsSignature.AspNetCore.Tests
+namespace RequestsSignature.AspNetCore.Tests.Services
 {
     public class SignatureBodySourceBuilderTests
     {

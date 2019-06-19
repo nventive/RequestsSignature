@@ -1,4 +1,4 @@
-﻿namespace RequestsSignature.AspNetCore
+﻿namespace RequestsSignature.AspNetCore.Services
 {
     /// <summary>
     /// Results of a signature validation process.
