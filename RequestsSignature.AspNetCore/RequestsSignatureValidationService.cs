@@ -122,7 +122,14 @@ namespace RequestsSignature.AspNetCore
                 return result;
             }
 
-            var signature = await _requestSigner.CreateSignature(request, clientOptions);
+            var signingRequest = new SigningRequest
+            {
+                Request = request,
+                Nonce = signatureComponents.Nonce,
+                Timestamp = signatureComponents.Timestamp,
+                Options = clientOptions,
+            };
+            var signature = await _requestSigner.CreateSignature(signingRequest);
             if (!string.Equals(signature, signatureComponents.Signature, StringComparison.Ordinal))
             {
                 result = new SignatureValidationResult(

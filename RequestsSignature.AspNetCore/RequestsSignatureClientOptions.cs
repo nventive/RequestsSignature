@@ -1,4 +1,8 @@
-﻿namespace RequestsSignature.AspNetCore
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using SC = RequestsSignature.AspNetCore.SignatureBodySourceComponents;
+
+namespace RequestsSignature.AspNetCore
 {
     /// <summary>
     /// Signature options for a specific client.
@@ -6,10 +10,12 @@
     public class RequestsSignatureClientOptions
     {
         /// <summary>
-        /// Gets the default <see cref="SignatureBodyPattern"/>.
-        /// ({Method}.{Scheme}://{Host}{Path}{QueryString}).
+        /// Gets the default <see cref="SignatureBodySourceComponents"/>.
         /// </summary>
-        public const string DefaultSignatureBodyPattern = @"{Method} {Scheme}://{Host}{Path}{QueryString}";
+        public static readonly IList<string> DefaultSignatureBodySourceComponents = new List<string>
+        { SC.Method, SC.Scheme, SC.Host, SC.Path, SC.QueryString, SC.Body };
+
+        private IList<string> _signatureBodySourceComponents;
 
         /// <summary>
         /// Gets or sets the client id.
@@ -22,8 +28,14 @@
         public string Key { get; set; }
 
         /// <summary>
-        /// Gets or sets the pattern used to constitute the value that needs to be signed.
+        /// Gets or sets the ordered list of singature body source components used to compute
+        /// the value that will be signed and create the signature body.
         /// </summary>
-        public string SignatureBodyPattern { get; set; } = DefaultSignatureBodyPattern;
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Allow easy binding.")]
+        public IList<string> SignatureBodySourceComponents
+        {
+            get => _signatureBodySourceComponents ?? (_signatureBodySourceComponents = DefaultSignatureBodySourceComponents);
+            set => _signatureBodySourceComponents = value;
+        }
     }
 }

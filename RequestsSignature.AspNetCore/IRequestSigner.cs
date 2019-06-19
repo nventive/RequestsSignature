@@ -9,11 +9,10 @@ namespace RequestsSignature.AspNetCore
     public interface IRequestSigner
     {
         /// <summary>
-        /// Creates a signature for the <paramref name="request"/>.
+        /// Creates a signature for the <paramref name="signingRequest"/>.
         /// </summary>
-        /// <param name="request">The <see cref="HttpRequest"/>.</param>
-        /// <param name="clientOptions">The <see cref="RequestsSignatureClientOptions"/>.</param>
+        /// <param name="signingRequest">The <see cref="SigningRequest"/>.</param>
         /// <returns>The created signature.</returns>
-        Task<string> CreateSignature(HttpRequest request, RequestsSignatureClientOptions clientOptions);
+        Task<string> CreateSignature(SigningRequest signingRequest);
     }
 }
