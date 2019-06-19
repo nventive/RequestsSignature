@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using RequestsSignature.AspNetCore.Services;
+using RequestsSignature.Core;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

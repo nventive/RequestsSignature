@@ -2,12 +2,12 @@
 using System.Diagnostics.CodeAnalysis;
 using RequestsSignature.Core;
 
-namespace RequestsSignature.AspNetCore
+namespace RequestsSignature.HttpClient
 {
     /// <summary>
-    /// Signature options for a specific client.
+    /// Options for signing requests.
     /// </summary>
-    public class RequestsSignatureClientOptions
+    public class RequestsSignatureOptions
     {
         private IList<string> _signatureBodySourceComponents;
 
@@ -17,9 +17,24 @@ namespace RequestsSignature.AspNetCore
         public string ClientId { get; set; }
 
         /// <summary>
-        /// Gets or sets the signature key.
+        /// Gets or sets the key signature.
         /// </summary>
         public string Key { get; set; }
+
+        /// <summary>
+        /// Gets or sets the header name.
+        /// </summary>
+        public string HeaderName { get; set; } = DefaultConstants.HeaderName;
+
+        /// <summary>
+        /// Gets or sets the header signature pattern.
+        /// </summary>
+        public string SignaturePatternBuilder { get; set; } = DefaultConstants.SignaturePatternBuilder;
+
+        /// <summary>
+        /// Gets or sets the size of the generated nonce in bytes. Defaults to 16.
+        /// </summary>
+        public int NonceSize { get; set; } = 16;
 
         /// <summary>
         /// Gets or sets the ordered list of singature body source components used to compute

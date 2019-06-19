@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using RequestsSignature.AspNetCore.Services;
+using RequestsSignature.Core;
 
 namespace RequestsSignature.AspNetCore.Middleware
 {

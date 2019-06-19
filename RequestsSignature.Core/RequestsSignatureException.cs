@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RequestsSignature.AspNetCore
+namespace RequestsSignature.Core
 {
     /// <summary>
     /// Exceptions thrown during Requests Signature processing.

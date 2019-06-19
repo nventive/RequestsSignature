@@ -24,6 +24,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestsSignature.HttpClien
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestsSignature.HttpClient.Tests", "RequestsSignature.HttpClient.Tests\RequestsSignature.HttpClient.Tests.csproj", "{99660895-C380-45E7-9CF2-0052A5E1B69B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestsSignature.Core", "RequestsSignature.Core\RequestsSignature.Core.csproj", "{7F0A764A-31EF-4E2F-9DA7-254C15F0D5DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestsSignature.Core.Tests", "RequestsSignature.Core.Tests\RequestsSignature.Core.Tests.csproj", "{FECE4F2B-A8FE-42D3-8727-BAE949B67DB8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +50,14 @@ Global
 		{99660895-C380-45E7-9CF2-0052A5E1B69B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99660895-C380-45E7-9CF2-0052A5E1B69B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99660895-C380-45E7-9CF2-0052A5E1B69B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F0A764A-31EF-4E2F-9DA7-254C15F0D5DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F0A764A-31EF-4E2F-9DA7-254C15F0D5DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F0A764A-31EF-4E2F-9DA7-254C15F0D5DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F0A764A-31EF-4E2F-9DA7-254C15F0D5DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FECE4F2B-A8FE-42D3-8727-BAE949B67DB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FECE4F2B-A8FE-42D3-8727-BAE949B67DB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FECE4F2B-A8FE-42D3-8727-BAE949B67DB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FECE4F2B-A8FE-42D3-8727-BAE949B67DB8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

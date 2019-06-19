@@ -1,7 +1,6 @@
 ﻿using System;
-using Microsoft.AspNetCore.Http;
 
-namespace RequestsSignature.AspNetCore.Services
+namespace RequestsSignature.Core
 {
     /// <summary>
     /// Constants that represents signature body source components.
@@ -9,32 +8,32 @@ namespace RequestsSignature.AspNetCore.Services
     public static class SignatureBodySourceComponents
     {
         /// <summary>
-        /// The <see cref="HttpRequest.Method"/>.
+        /// The Request Method.
         /// </summary>
         public const string Method = "Method";
 
         /// <summary>
-        /// The <see cref="HttpRequest.Scheme"/>.
+        /// The Request Scheme.
         /// </summary>
         public const string Scheme = "Scheme";
 
         /// <summary>
-        /// The <see cref="HttpRequest.Host"/>.
+        /// The Request Host.
         /// </summary>
         public const string Host = "Host";
 
         /// <summary>
-        /// The <see cref="HttpRequest.Path"/>.
+        /// The Request Path.
         /// </summary>
         public const string Path = "Path";
 
         /// <summary>
-        /// The <see cref="HttpRequest.QueryString"/>.
+        /// The Request QueryString.
         /// </summary>
         public const string QueryString = "QueryString";
 
         /// <summary>
-        /// The <see cref="HttpRequest.Body"/>.
+        /// The Request Body.
         /// </summary>
         public const string Body = "Body";
 
@@ -49,9 +48,9 @@ namespace RequestsSignature.AspNetCore.Services
         public const string Nonce = "Nonce";
 
         /// <summary>
-        /// A specific header in <see cref="HttpRequest.Headers"/>.
+        /// A specific header in the Request.
         /// </summary>
-        /// <param name="headerName">The name of the header in <see cref="HttpRequest.Headers"/>.</param>
+        /// <param name="headerName">The name of the header.</param>
         /// <returns>The source component name.</returns>
         public static string Header(string headerName) => $"Header{headerName}";
 

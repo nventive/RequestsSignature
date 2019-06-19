@@ -3,18 +3,18 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RequestsSignature.AspNetCore.Services
+namespace RequestsSignature.Core
 {
     /// <summary>
     /// <see cref="IRequestSigner"/> implementation that uses <see cref="HashAlgorithm"/>.
     /// </summary>
-    internal class HashAlgorithmRequestSigner : IRequestSigner
+    public class HashAlgorithmRequestSigner : IRequestSigner
     {
-        private static readonly Func<SigningRequest, HashAlgorithm> DefaultHashAlgorithmBuilder =
-            signingRequest => new HMACSHA256(Encoding.UTF8.GetBytes(signingRequest.Options.Key));
+        private static readonly Func<SigningBodyRequest, HashAlgorithm> DefaultHashAlgorithmBuilder =
+            signingRequest => new HMACSHA256(Encoding.UTF8.GetBytes(signingRequest.Key));
 
         private readonly ISignatureBodySourceBuilder _signatureBodySourceBuilder;
-        private readonly Func<SigningRequest, HashAlgorithm> _hashAlgorithmBuilder;
+        private readonly Func<SigningBodyRequest, HashAlgorithm> _hashAlgorithmBuilder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HashAlgorithmRequestSigner"/> class.
@@ -23,14 +23,14 @@ namespace RequestsSignature.AspNetCore.Services
         /// <param name="hashAlgorithmBuilder">Allows customization of the hash algorithm used. Defaults to <see cref="HMACSHA256"/>.</param>
         public HashAlgorithmRequestSigner(
             ISignatureBodySourceBuilder signatureBodySourceBuilder,
-            Func<SigningRequest, HashAlgorithm> hashAlgorithmBuilder = null)
+            Func<SigningBodyRequest, HashAlgorithm> hashAlgorithmBuilder = null)
         {
             _signatureBodySourceBuilder = signatureBodySourceBuilder ?? throw new ArgumentNullException(nameof(signatureBodySourceBuilder));
             _hashAlgorithmBuilder = hashAlgorithmBuilder ?? DefaultHashAlgorithmBuilder;
         }
 
         /// <inheritdoc />
-        public async Task<string> CreateSignature(SigningRequest signingRequest)
+        public async Task<string> CreateSignatureBody(SigningBodyRequest signingRequest)
         {
             if (signingRequest == null)
             {

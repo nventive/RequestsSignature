@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using NodaTime;
 using RequestsSignature.AspNetCore.Services;
+using RequestsSignature.Core;
 using Xunit;
 
 namespace RequestsSignature.AspNetCore.Tests.Services
@@ -134,7 +135,7 @@ namespace RequestsSignature.AspNetCore.Tests.Services
             var expectedSignature = "expectedSignature";
             var optionsMonitor = CreateOptionsMonitor();
             var requestSignerMock = new Mock<IRequestSigner>();
-            requestSignerMock.Setup(x => x.CreateSignature(It.IsAny<SigningRequest>()))
+            requestSignerMock.Setup(x => x.CreateSignatureBody(It.IsAny<SigningBodyRequest>()))
                 .ReturnsAsync(expectedSignature);
             var service = new RequestsSignatureValidationService(
                 optionsMonitor,
@@ -157,7 +158,7 @@ namespace RequestsSignature.AspNetCore.Tests.Services
             var expectedSignature = "expectedSignature";
             var optionsMonitor = CreateOptionsMonitor();
             var requestSignerMock = new Mock<IRequestSigner>();
-            requestSignerMock.Setup(x => x.CreateSignature(It.IsAny<SigningRequest>()))
+            requestSignerMock.Setup(x => x.CreateSignatureBody(It.IsAny<SigningBodyRequest>()))
                 .ReturnsAsync(expectedSignature);
             var service = new RequestsSignatureValidationService(
                 optionsMonitor,

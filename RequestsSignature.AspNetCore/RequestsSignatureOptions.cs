@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using RequestsSignature.Core;
 
 namespace RequestsSignature.AspNetCore
 {
@@ -14,17 +15,6 @@ namespace RequestsSignature.AspNetCore
         /// Gets the default <see cref="Disabled"/> value (false).
         /// </summary>
         public const bool DefaultDisabled = false;
-
-        /// <summary>
-        /// Gets the default <see cref="HeaderName"/> (X-RequestSignature).
-        /// </summary>
-        public const string DefaultHeaderName = "X-RequestSignature";
-
-        /// <summary>
-        /// Gets the default <see cref="SignaturePattern"/> ({ClientId}:{Nonce}:{Timestamp}:{Signature}).
-        /// </summary>
-        public static readonly Regex DefaultSignaturePattern
-            = new Regex(@"^(?<ClientId>[^:]+):(?<Nonce>[^:]+):(?<Timestamp>[\d]+):(?<Signature>[^:]+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
         /// <summary>
         /// Gets the default <see cref="ClockSkew"/> (5 minutes).
@@ -56,14 +46,14 @@ namespace RequestsSignature.AspNetCore
 
         /// <summary>
         /// Gets or sets the name of the header that carries out signature information.
-        /// Default to <see cref="DefaultHeaderName"/> (X-RequestSignature).
+        /// Default to <see cref="DefaultConstants.HeaderName"/> (X-RequestSignature).
         /// </summary>
-        public string HeaderName { get; set; } = DefaultHeaderName;
+        public string HeaderName { get; set; } = DefaultConstants.HeaderName;
 
         /// <summary>
         /// Gets or sets the overral <see cref="Regex"/> pattern for the signature.
-        /// Defaults to <see cref="DefaultSignaturePattern"/> ({ClientId}:{Nonce}:{Timestamp}:{Signature}).
+        /// Defaults to <see cref="DefaultConstants.SignaturePatternParser"/> ({ClientId}:{Nonce}:{Timestamp}:{SignatureBody}).
         /// </summary>
-        public Regex SignaturePattern { get; set; } = DefaultSignaturePattern;
+        public Regex SignaturePattern { get; set; } = DefaultConstants.SignaturePatternParser;
     }
 }

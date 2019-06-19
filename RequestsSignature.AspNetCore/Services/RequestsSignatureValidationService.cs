@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.IO;
 using NodaTime;
+using RequestsSignature.Core;
 
 namespace RequestsSignature.AspNetCore.Services
 {
@@ -21,6 +25,7 @@ namespace RequestsSignature.AspNetCore.Services
         private readonly INonceRepository _nonceRepository;
         private readonly ILogger _logger;
 
+        private readonly RecyclableMemoryStreamManager _memoryStreamManager = new RecyclableMemoryStreamManager();
         private RequestsSignatureOptions _options;
 
         /// <summary>
@@ -94,7 +99,7 @@ namespace RequestsSignature.AspNetCore.Services
                 ClientId = headerMatch.Groups["ClientId"]?.Value,
                 Nonce = headerMatch.Groups["Nonce"]?.Value,
                 Timestamp = long.Parse(headerMatch.Groups["Timestamp"]?.Value ?? "0", CultureInfo.InvariantCulture),
-                Signature = headerMatch.Groups["Signature"]?.Value,
+                SignatureBody = headerMatch.Groups["SignatureBody"]?.Value,
             };
 
             var clientOptions = _options.Clients.FirstOrDefault(x => string.Equals(x.ClientId, signatureComponents.ClientId, StringComparison.Ordinal));
@@ -131,15 +136,36 @@ namespace RequestsSignature.AspNetCore.Services
                 return result;
             }
 
-            var signingRequest = new SigningRequest
+            var signingRequest = new SigningBodyRequest
             {
-                Request = request,
+                Method = request.Method,
+                Scheme = request.Scheme,
+                Host = request.Host.ToString(),
+                Path = request.Path,
+                QueryString = request.QueryString.ToString(),
+                Headers = request.Headers.ToDictionary(x => x.Key, x => x.Value.ToString()),
                 Nonce = signatureComponents.Nonce,
                 Timestamp = signatureComponents.Timestamp,
-                Options = clientOptions,
+                ClientId = clientOptions.ClientId,
+                Key = clientOptions.Key,
+                SignatureBodySourceComponents = clientOptions.SignatureBodySourceComponents,
             };
-            var signature = await _requestSigner.CreateSignature(signingRequest);
-            if (!string.Equals(signature, signatureComponents.Signature, StringComparison.Ordinal))
+
+            if (clientOptions.SignatureBodySourceComponents.Contains(SignatureBodySourceComponents.Body))
+            {
+                request.EnableRewind();
+                request.Body.Seek(0, SeekOrigin.Begin);
+                using (var memoryStream = _memoryStreamManager.GetStream())
+                {
+                    await request.Body.CopyToAsync(memoryStream);
+                    signingRequest.Body = memoryStream.ToArray();
+                }
+
+                request.Body.Seek(0, SeekOrigin.Begin);
+            }
+
+            var signature = await _requestSigner.CreateSignatureBody(signingRequest);
+            if (!string.Equals(signature, signatureComponents.SignatureBody, StringComparison.Ordinal))
             {
                 result = new SignatureValidationResult(
                     SignatureValidationResultStatus.SignatureDoesntMatch,
@@ -212,7 +238,7 @@ namespace RequestsSignature.AspNetCore.Services
 
             public long Timestamp;
 
-            public string Signature;
+            public string SignatureBody;
         }
     }
 }

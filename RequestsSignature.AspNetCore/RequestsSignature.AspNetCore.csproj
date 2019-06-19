@@ -34,4 +34,8 @@
     <Compile Include="InternalsVisibleTo.cs" Link="Properties\InternalsVisibleTo.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\RequestsSignature.Core\RequestsSignature.Core.csproj" />
+  </ItemGroup>
+
 </Project>

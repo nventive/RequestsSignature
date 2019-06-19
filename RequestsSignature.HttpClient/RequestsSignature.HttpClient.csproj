@@ -16,9 +16,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-  </ItemGroup>
-
-  <ItemGroup>
     <!--<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19270-01" PrivateAssets="All" />-->
     <PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta2-19270-01" PrivateAssets="All" />
   </ItemGroup>
@@ -26,6 +23,10 @@
   <ItemGroup>
     <Compile Remove="InternalsVisibleTo.cs" />
     <Compile Include="InternalsVisibleTo.cs" Link="Properties\InternalsVisibleTo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RequestsSignature.Core\RequestsSignature.Core.csproj" />
   </ItemGroup>
 
 </Project>
