@@ -13,22 +13,27 @@ namespace RequestsSignature.Core
         public const string Method = "Method";
 
         /// <summary>
-        /// The Request Scheme.
+        /// The Request Uri Scheme.
         /// </summary>
         public const string Scheme = "Scheme";
 
         /// <summary>
-        /// The Request Host.
+        /// The Request Uri Host.
         /// </summary>
         public const string Host = "Host";
 
         /// <summary>
-        /// The Request Path.
+        /// The Request Uri Port.
         /// </summary>
-        public const string Path = "Path";
+        public const string Port = "Port";
 
         /// <summary>
-        /// The Request QueryString.
+        /// The Request Uri Local Path.
+        /// </summary>
+        public const string LocalPath = "LocalPath";
+
+        /// <summary>
+        /// The Request Uri QueryString.
         /// </summary>
         public const string QueryString = "QueryString";
 

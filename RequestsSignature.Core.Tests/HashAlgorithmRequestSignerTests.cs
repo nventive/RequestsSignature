@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -11,10 +12,15 @@ namespace RequestsSignature.Core.Tests
         [Fact]
         public async Task ItShouldComputeHash()
         {
-            var signingRequest = new SigningBodyRequest
-            {
-                Key = "Key",
-            };
+            var signingRequest = new SigningBodyRequest(
+                "GET",
+                new Uri("https://www.example.org"),
+                new Dictionary<string, string>(),
+                "nonce",
+                0,
+                "clientId",
+                "key",
+                new List<string>());
             var signatureBodySourceBuilder = new Mock<ISignatureBodySourceBuilder>();
             signatureBodySourceBuilder.Setup(x => x.Build(signingRequest))
                 .ReturnsAsync(new byte[] { 1 });

@@ -1,77 +1,97 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace RequestsSignature.Core
 {
     /// <summary>
     /// Holds parameters for signing a request.
     /// </summary>
-    [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Internal usage.")]
     public class SigningBodyRequest
     {
         /// <summary>
-        /// Gets or sets the Request Method.
+        /// Initializes a new instance of the <see cref="SigningBodyRequest"/> class.
         /// </summary>
-        public string Method { get; set; }
+        /// <param name="method">The request method.</param>
+        /// <param name="uri">The request <see cref="Uri"/>.</param>
+        /// <param name="headers">The request headers.</param>
+        /// <param name="nonce">The nonce.</param>
+        /// <param name="timestamp">The timestamp.</param>
+        /// <param name="clientId">The client id.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="signatureBodySourceComponents">The signature body components.</param>
+        /// <param name="body">The request body, if any.</param>
+        public SigningBodyRequest(
+            string method,
+            Uri uri,
+            IDictionary<string, string> headers,
+            string nonce,
+            long timestamp,
+            string clientId,
+            string key,
+            IList<string> signatureBodySourceComponents,
+            byte[] body = null)
+        {
+            Method = method;
+            Uri = uri;
+            Headers = headers;
+            Nonce = nonce;
+            Timestamp = timestamp;
+            ClientId = clientId;
+            Key = key;
+            SignatureBodySourceComponents = signatureBodySourceComponents;
+            Body = body;
+        }
 
         /// <summary>
-        /// Gets or sets the Uri Scheme.
+        /// Gets the Request Method.
         /// </summary>
-        public string Scheme { get; set; }
+        public string Method { get; }
 
         /// <summary>
-        /// Gets or sets the Uri Scheme.
+        /// Gets the <see cref="Uri"/>.
         /// </summary>
-        public string Host { get; set; }
+        public Uri Uri { get; }
 
         /// <summary>
-        /// Gets or sets the Uri Scheme.
+        /// Gets the Request Method.
         /// </summary>
-        public string Path { get; set; }
+        public IDictionary<string, string> Headers { get; }
 
         /// <summary>
-        /// Gets or sets the Uri QueryString.
+        /// Gets the Request body.
         /// </summary>
-        public string QueryString { get; set; }
+        [SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "OK in that case - binary data.")]
+        public byte[] Body { get; }
 
         /// <summary>
-        /// Gets or sets the Request Method.
+        /// Gets the nonce.
         /// </summary>
-        public IReadOnlyDictionary<string, string> Headers { get; set; }
+        public string Nonce { get; }
 
         /// <summary>
-        /// Gets or sets the Request body.
+        /// Gets the timestamp.
         /// </summary>
-        [SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "OK in that case.")]
-        public byte[] Body { get; set; }
+        public long Timestamp { get; }
 
         /// <summary>
-        /// Gets or sets the nonce.
+        /// Gets the client id.
         /// </summary>
-        public string Nonce { get; set; }
+        public string ClientId { get; }
 
         /// <summary>
-        /// Gets or sets the timestamp.
+        /// Gets the signature key.
         /// </summary>
-        public long Timestamp { get; set; }
+        public string Key { get; }
 
         /// <summary>
-        /// Gets or sets the client id.
-        /// </summary>
-        public string ClientId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the signature key.
-        /// </summary>
-        public string Key { get; set; }
-
-        /// <summary>
-        /// Gets or sets the ordered list of singature body source components used to compute
+        /// Gets the ordered list of singature body source components used to compute
         /// the value that will be signed and create the signature body.
         /// </summary>
-        public IList<string> SignatureBodySourceComponents { get; set; }
+        public IList<string> SignatureBodySourceComponents { get; }
 
         /// <inheritdoc />
-        public override string ToString() => $"{Method} {Scheme}://{Host}/{Path}{QueryString} {Nonce} {Timestamp}";
+        public override string ToString() => $"{Method} {Uri} {Nonce} {Timestamp}";
     }
 }

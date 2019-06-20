@@ -31,16 +31,19 @@ namespace RequestsSignature.Core
                             result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Method.ToUpperInvariant()));
                             break;
                         case SignatureBodySourceComponents.Scheme:
-                            result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Scheme));
+                            result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Uri.Scheme));
                             break;
                         case SignatureBodySourceComponents.Host:
-                            result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Host));
+                            result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Uri.Host));
                             break;
-                        case SignatureBodySourceComponents.Path:
-                            result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Path));
+                        case SignatureBodySourceComponents.Port:
+                            result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Uri.Port.ToString(CultureInfo.InvariantCulture)));
+                            break;
+                        case SignatureBodySourceComponents.LocalPath:
+                            result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Uri.LocalPath));
                             break;
                         case SignatureBodySourceComponents.QueryString:
-                            result.AddRange(Encoding.UTF8.GetBytes(signingRequest.QueryString));
+                            result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Uri.Query));
                             break;
                         case SignatureBodySourceComponents.Body:
                             result.AddRange(signingRequest.Body ?? Array.Empty<byte>());

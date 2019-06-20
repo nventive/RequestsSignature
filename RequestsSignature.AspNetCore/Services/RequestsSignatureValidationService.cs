@@ -3,13 +3,13 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.IO;
-using NodaTime;
 using RequestsSignature.Core;
 
 namespace RequestsSignature.AspNetCore.Services
@@ -21,7 +21,7 @@ namespace RequestsSignature.AspNetCore.Services
     {
         private readonly IOptionsMonitor<RequestsSignatureOptions> _optionsMonitor;
         private readonly IRequestSigner _requestSigner;
-        private readonly IClock _clock;
+        private readonly ISystemClock _clock;
         private readonly INonceRepository _nonceRepository;
         private readonly ILogger _logger;
 
@@ -33,19 +33,19 @@ namespace RequestsSignature.AspNetCore.Services
         /// </summary>
         /// <param name="options">The <see cref="RequestsSignatureOptions"/>.</param>
         /// <param name="requestSigner">The <see cref="IRequestSigner"/>.</param>
-        /// <param name="clock">The <see cref="IClock"/> instance for time retrieval. Defaults to <see cref="SystemClock"/>.</param>
+        /// <param name="clock">The <see cref="ISystemClock"/> instance for time retrieval. Defaults to <see cref="SystemClock"/>.</param>
         /// <param name="nonceRepository">The <see cref="INonceRepository"/> to use. Defaults to <see cref="NullNonceRepository"/>.</param>
         /// <param name="logger">The <see cref="ILogger"/> to use. Defaults to <see cref="NullLogger"/>.</param>
         public RequestsSignatureValidationService(
             IOptionsMonitor<RequestsSignatureOptions> options,
             IRequestSigner requestSigner,
-            IClock clock = null,
+            ISystemClock clock = null,
             INonceRepository nonceRepository = null,
             ILogger<RequestsSignatureValidationService> logger = null)
         {
             _optionsMonitor = options ?? throw new ArgumentNullException(nameof(options));
             _requestSigner = requestSigner ?? throw new ArgumentNullException(nameof(requestSigner));
-            _clock = clock ?? SystemClock.Instance;
+            _clock = clock ?? new SystemClock();
             _nonceRepository = nonceRepository ?? NullNonceRepository.Instance;
             _logger = (ILogger)logger ?? NullLogger.Instance;
             _optionsMonitor.OnChange(OnOptionsChange);
@@ -60,7 +60,7 @@ namespace RequestsSignature.AspNetCore.Services
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var serverTimestamp = _clock.GetCurrentInstant().ToUnixTimeSeconds();
+            var serverTimestamp = _clock.UtcNow.ToUnixTimeSeconds();
             SignatureValidationResult result;
 
             if (_options.Disabled)
@@ -136,21 +136,7 @@ namespace RequestsSignature.AspNetCore.Services
                 return result;
             }
 
-            var signingRequest = new SigningBodyRequest
-            {
-                Method = request.Method,
-                Scheme = request.Scheme,
-                Host = request.Host.ToString(),
-                Path = request.Path,
-                QueryString = request.QueryString.ToString(),
-                Headers = request.Headers.ToDictionary(x => x.Key, x => x.Value.ToString()),
-                Nonce = signatureComponents.Nonce,
-                Timestamp = signatureComponents.Timestamp,
-                ClientId = clientOptions.ClientId,
-                Key = clientOptions.Key,
-                SignatureBodySourceComponents = clientOptions.SignatureBodySourceComponents,
-            };
-
+            byte[] body = null;
             if (clientOptions.SignatureBodySourceComponents.Contains(SignatureBodySourceComponents.Body))
             {
                 request.EnableRewind();
@@ -158,11 +144,22 @@ namespace RequestsSignature.AspNetCore.Services
                 using (var memoryStream = _memoryStreamManager.GetStream())
                 {
                     await request.Body.CopyToAsync(memoryStream);
-                    signingRequest.Body = memoryStream.ToArray();
+                    body = memoryStream.ToArray();
                 }
 
                 request.Body.Seek(0, SeekOrigin.Begin);
             }
+
+            var signingRequest = new SigningBodyRequest(
+                request.Method,
+                new Uri($"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}"),
+                request.Headers.ToDictionary(x => x.Key, x => x.Value.ToString()),
+                signatureComponents.Nonce,
+                signatureComponents.Timestamp,
+                clientOptions.ClientId,
+                clientOptions.Key,
+                clientOptions.SignatureBodySourceComponents,
+                body);
 
             var signature = await _requestSigner.CreateSignatureBody(signingRequest);
             if (!string.Equals(signature, signatureComponents.SignatureBody, StringComparison.Ordinal))

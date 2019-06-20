@@ -23,7 +23,7 @@ namespace RequestsSignature.Core
         /// Gets the default source components for signature body.
         /// </summary>
         public static readonly IList<string> SignatureBodySourceComponents = new List<string>
-        { SC.Nonce, SC.Timestamp, SC.Method, SC.Scheme, SC.Host, SC.Path, SC.QueryString, SC.Body };
+        { SC.Nonce, SC.Timestamp, SC.Method, SC.Scheme, SC.Host, SC.LocalPath, SC.QueryString, SC.Body };
 
         /// <summary>
         /// Gets the default pattern for parsing the signature.

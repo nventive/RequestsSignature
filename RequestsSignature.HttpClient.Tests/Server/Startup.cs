@@ -16,7 +16,7 @@ namespace RequestsSignature.HttpClient.Tests.Server
         public const string CustomKey = "020ee7d9657e4d389e21d05bdd619e52";
 
         public static readonly IList<string> CustomSignatureBodySourceComponents = new List<string>
-            { SignatureBodySourceComponents.Path, SignatureBodySourceComponents.Timestamp };
+            { SignatureBodySourceComponents.LocalPath, SignatureBodySourceComponents.Timestamp };
 
         public void ConfigureServices(IServiceCollection services)
         {

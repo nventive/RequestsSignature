@@ -32,11 +32,6 @@ namespace RequestsSignature.HttpClient
         public string SignaturePatternBuilder { get; set; } = DefaultConstants.SignaturePatternBuilder;
 
         /// <summary>
-        /// Gets or sets the size of the generated nonce in bytes. Defaults to 16.
-        /// </summary>
-        public int NonceSize { get; set; } = 16;
-
-        /// <summary>
         /// Gets or sets the ordered list of singature body source components used to compute
         /// the value that will be signed and create the signature body.
         /// </summary>

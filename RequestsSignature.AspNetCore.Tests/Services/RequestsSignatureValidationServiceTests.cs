@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Options;
 using Moq;
-using NodaTime;
 using RequestsSignature.AspNetCore.Services;
 using RequestsSignature.Core;
 using Xunit;
@@ -90,7 +90,7 @@ namespace RequestsSignature.AspNetCore.Tests.Services
         [Fact]
         public async Task ItShouldValidateNonce()
         {
-            var nonce = "asdf";
+            var nonce = Guid.NewGuid().ToString();
             var optionsMonitor = CreateOptionsMonitor();
             var requestSignerMock = new Mock<IRequestSigner>();
             var nonceRepository = new Mock<INonceRepository>();
@@ -119,9 +119,10 @@ namespace RequestsSignature.AspNetCore.Tests.Services
                 optionsMonitor,
                 requestSignerMock.Object);
 
-            var timestamp = SystemClock.Instance.GetCurrentInstant().Plus(Duration.FromTimeSpan(optionsMonitor.CurrentValue.ClockSkew).Plus(Duration.FromMinutes(1)));
+            var now = new SystemClock().UtcNow;
+            var timestamp = now.Add(optionsMonitor.CurrentValue.ClockSkew).AddMinutes(1);
             var httpRequest = new DefaultHttpRequest(new DefaultHttpContext());
-            httpRequest.Headers[optionsMonitor.CurrentValue.HeaderName] = $"{ClientId}:asdf:{timestamp.ToUnixTimeSeconds()}:asdf";
+            httpRequest.Headers[optionsMonitor.CurrentValue.HeaderName] = $"{ClientId}:{Guid.NewGuid()}:{timestamp.ToUnixTimeSeconds()}:asdf";
             var result = await service.Validate(httpRequest);
 
             result.Status.Should().Be(SignatureValidationResultStatus.TimestampIsOff);
@@ -141,9 +142,14 @@ namespace RequestsSignature.AspNetCore.Tests.Services
                 optionsMonitor,
                 requestSignerMock.Object);
 
-            var timestamp = SystemClock.Instance.GetCurrentInstant();
-            var httpRequest = new DefaultHttpRequest(new DefaultHttpContext());
-            httpRequest.Headers[optionsMonitor.CurrentValue.HeaderName] = $"{ClientId}:asdf:{timestamp.ToUnixTimeSeconds()}:asdf";
+            var timestamp = new SystemClock().UtcNow.ToUnixTimeSeconds();
+            var httpRequest = new DefaultHttpRequest(new DefaultHttpContext())
+            {
+                Scheme = "https",
+                Host = new HostString("example.org"),
+                Path = "/",
+            };
+            httpRequest.Headers[optionsMonitor.CurrentValue.HeaderName] = $"{ClientId}:{Guid.NewGuid()}:{timestamp}:asdf";
             var result = await service.Validate(httpRequest);
 
             result.Status.Should().Be(SignatureValidationResultStatus.SignatureDoesntMatch);
@@ -164,9 +170,14 @@ namespace RequestsSignature.AspNetCore.Tests.Services
                 optionsMonitor,
                 requestSignerMock.Object);
 
-            var timestamp = SystemClock.Instance.GetCurrentInstant();
-            var httpRequest = new DefaultHttpRequest(new DefaultHttpContext());
-            httpRequest.Headers[optionsMonitor.CurrentValue.HeaderName] = $"{ClientId}:asdf:{timestamp.ToUnixTimeSeconds()}:{expectedSignature}";
+            var timestamp = new SystemClock().UtcNow.ToUnixTimeSeconds();
+            var httpRequest = new DefaultHttpRequest(new DefaultHttpContext())
+            {
+                Scheme = "https",
+                Host = new HostString("example.org"),
+                Path = "/",
+            };
+            httpRequest.Headers[optionsMonitor.CurrentValue.HeaderName] = $"{ClientId}:{Guid.NewGuid()}:{timestamp}:{expectedSignature}";
             var result = await service.Validate(httpRequest);
 
             result.Status.Should().Be(SignatureValidationResultStatus.OK);
