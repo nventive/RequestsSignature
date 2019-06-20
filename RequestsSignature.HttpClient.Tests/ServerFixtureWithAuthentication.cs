@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
@@ -11,15 +9,15 @@ namespace RequestsSignature.HttpClient.Tests
 {
     /// <summary>
     /// xUnit collection fixture that starts an ASP.NET Core server listening to a random port.
-    /// <seealso cref="ServerCollection" />.
+    /// <seealso cref="ServerWithAuthenticationCollection" />.
     /// </summary>
-    public class ServerFixture : IDisposable
+    public class ServerFixtureWithAuthentication : IDisposable
     {
-        public ServerFixture()
+        public ServerFixtureWithAuthentication()
         {
             ServerWebHost = WebHost
                 .CreateDefaultBuilder()
-                .UseStartup<Startup>()
+                .UseStartup<StartupWithAuthentication>()
                 .UseUrls("http://127.0.0.1:0")
                 .Build();
             ServerWebHost.Start();

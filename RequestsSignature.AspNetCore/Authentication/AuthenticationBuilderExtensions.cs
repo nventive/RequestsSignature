@@ -1,13 +1,23 @@
 ﻿using System;
+using Microsoft.AspNetCore.Authentication;
 using RequestsSignature.AspNetCore.Authentication;
 
-namespace Microsoft.AspNetCore.Authentication
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
     /// <see cref="AuthenticationBuilder"/> extension methods.
     /// </summary>
     public static class AuthenticationBuilderExtensions
     {
+        /// <summary>
+        /// Adds requests signature authentication scheme.
+        /// </summary>
+        /// <param name="builder">The <see cref="AuthenticationBuilder"/>.</param>
+        /// <returns>The configured <see cref="AuthenticationBuilder"/>.</returns>
+        public static AuthenticationBuilder AddRequestsSignature(this AuthenticationBuilder builder)
+                => builder?.AddScheme<RequestsSignatureAuthenticationOptions, RequestsSignatureAuthenticationHandler>(
+                    RequestsSignatureAuthenticationConstants.AuthenticationScheme, RequestsSignatureAuthenticationConstants.DisplayName, options => { });
+
         /// <summary>
         /// Adds requests signature authentication scheme.
         /// </summary>

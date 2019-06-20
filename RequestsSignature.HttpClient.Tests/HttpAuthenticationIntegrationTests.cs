@@ -7,12 +7,12 @@ using Xunit;
 
 namespace RequestsSignature.HttpClient.Tests
 {
-    [Collection(ServerCollection.Name)]
-    public class HttpIntegrationTests
+    [Collection(ServerWithAuthenticationCollection.Name)]
+    public class HttpAuthenticationIntegrationTests
     {
-        private readonly ServerFixture _fixture;
+        private readonly ServerFixtureWithAuthentication _fixture;
 
-        public HttpIntegrationTests(ServerFixture fixture)
+        public HttpAuthenticationIntegrationTests(ServerFixtureWithAuthentication fixture)
         {
             _fixture = fixture;
         }
@@ -24,8 +24,8 @@ namespace RequestsSignature.HttpClient.Tests
                 new RequestsSignatureDelegatingHandler(
                     new RequestsSignatureOptions
                     {
-                        ClientId = Startup.DefaultClientId,
-                        Key = Startup.DefaultKey,
+                        ClientId = StartupWithMiddleware.DefaultClientId,
+                        Key = StartupWithMiddleware.DefaultKey,
                     }))
             {
                 BaseAddress = _fixture.ServerUri,
@@ -36,7 +36,7 @@ namespace RequestsSignature.HttpClient.Tests
             var result = await response.Content.ReadAsAsync<SignatureValidationResult>();
 
             result.Status.Should().Be(SignatureValidationResultStatus.OK);
-            result.ClientId.Should().Be(Startup.DefaultClientId);
+            result.ClientId.Should().Be(StartupWithMiddleware.DefaultClientId);
         }
 
         [Fact]
@@ -46,9 +46,9 @@ namespace RequestsSignature.HttpClient.Tests
                 new RequestsSignatureDelegatingHandler(
                     new RequestsSignatureOptions
                     {
-                        ClientId = Startup.CustomClientId,
-                        Key = Startup.CustomKey,
-                        SignatureBodySourceComponents = Startup.CustomSignatureBodySourceComponents,
+                        ClientId = StartupWithMiddleware.CustomClientId,
+                        Key = StartupWithMiddleware.CustomKey,
+                        SignatureBodySourceComponents = StartupWithMiddleware.CustomSignatureBodySourceComponents,
                     }))
             {
                 BaseAddress = _fixture.ServerUri,
@@ -59,7 +59,7 @@ namespace RequestsSignature.HttpClient.Tests
             var result = await response.Content.ReadAsAsync<SignatureValidationResult>();
 
             result.Status.Should().Be(SignatureValidationResultStatus.OK);
-            result.ClientId.Should().Be(Startup.CustomClientId);
+            result.ClientId.Should().Be(StartupWithMiddleware.CustomClientId);
         }
     }
 }

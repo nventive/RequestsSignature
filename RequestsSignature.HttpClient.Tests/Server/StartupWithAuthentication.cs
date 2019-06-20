@@ -2,12 +2,13 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using RequestsSignature.AspNetCore.Authentication;
 using RequestsSignature.Core;
 
 namespace RequestsSignature.HttpClient.Tests.Server
 {
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Default ASP.Net Core startup class.")]
-    public class Startup
+    public class StartupWithAuthentication
     {
         public const string DefaultClientId = "0ebb2f21169b4c82b1915f0559212a3a";
         public const string DefaultKey = "4b2a708910f74275a4ba46aeb3af346b";
@@ -40,11 +41,15 @@ namespace RequestsSignature.HttpClient.Tests.Server
             });
             services.AddRequestsSignatureValidation();
             services.AddMvc();
+
+            services
+                .AddAuthentication(RequestsSignatureAuthenticationConstants.AuthenticationScheme)
+                .AddRequestsSignature();
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseRequestsSignatureValidation();
+            app.UseAuthentication();
             app.UseMvc();
         }
     }
