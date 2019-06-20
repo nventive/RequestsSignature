@@ -16,11 +16,6 @@ namespace RequestsSignature.AspNetCore
         /// </summary>
         public const bool DefaultDisabled = false;
 
-        /// <summary>
-        /// Gets the default <see cref="ClockSkew"/> (5 minutes).
-        /// </summary>
-        public static readonly TimeSpan DefaultClockSkew = TimeSpan.FromMinutes(5);
-
         private IEnumerable<RequestsSignatureClientOptions> _clients;
 
         /// <summary>
@@ -40,9 +35,9 @@ namespace RequestsSignature.AspNetCore
         /// <summary>
         /// Gets or sets the allowed lag of time in either direction (past/future)
         /// where the request is still configured valid.
-        /// Defaults to <see cref="DefaultClockSkew"/> (5 minutes).
+        /// Defaults to <see cref="DefaultConstants.ClockSkew"/> (5 minutes).
         /// </summary>
-        public TimeSpan ClockSkew { get; set; } = DefaultClockSkew;
+        public TimeSpan ClockSkew { get; set; } = DefaultConstants.ClockSkew;
 
         /// <summary>
         /// Gets or sets the name of the header that carries out signature information.

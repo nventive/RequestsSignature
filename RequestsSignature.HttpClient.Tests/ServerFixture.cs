@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
 
 namespace RequestsSignature.HttpClient.Tests
 {

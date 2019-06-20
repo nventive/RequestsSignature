@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using SC = RequestsSignature.Core.SignatureBodySourceComponents;
 
@@ -30,5 +31,10 @@ namespace RequestsSignature.Core
         /// </summary>
         public static readonly Regex SignaturePatternParser
             = new Regex(@"^(?<ClientId>[^:]+):(?<Nonce>[^:]+):(?<Timestamp>[\d]+):(?<SignatureBody>[^:]+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+        /// <summary>
+        /// Gets the default clock skew (5 minutes).
+        /// </summary>
+        public static readonly TimeSpan ClockSkew = TimeSpan.FromMinutes(5);
     }
 }

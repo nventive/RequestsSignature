@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -79,6 +80,31 @@ namespace RequestsSignature.HttpClient.Tests
 
             var response = await client.GetAsync(ApiController.GetSignatureValidationResultWithAuthenticationUri);
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task ItShouldAutoRetryOnClockSkew()
+        {
+            var client = new System.Net.Http.HttpClient(
+                new RequestsSignatureDelegatingHandler(
+                    new RequestsSignatureOptions
+                    {
+                        ClientId = StartupWithMiddleware.DefaultClientId,
+                        Key = StartupWithMiddleware.DefaultKey,
+                    }))
+            {
+                BaseAddress = _fixture.ServerUri,
+            };
+
+            var request = new HttpRequestMessage(HttpMethod.Get, ApiController.GetSignatureValidationResultWithAuthenticationUri);
+            Func<HttpRequestMessage, long> timestampClock = (r) => DateTimeOffset.UtcNow.Subtract(TimeSpan.FromHours(1)).ToUnixTimeSeconds();
+            request.Properties[RequestsSignatureDelegatingHandler.TimestampClockProperty] = timestampClock;
+            var response = await client.SendAsync(request);
+
+            var result = await response.Content.ReadAsAsync<SignatureValidationResult>();
+
+            result.Status.Should().Be(SignatureValidationResultStatus.OK);
+            result.ClientId.Should().Be(StartupWithMiddleware.DefaultClientId);
         }
     }
 }
