@@ -30,7 +30,7 @@ namespace RequestsSignature.Core
         /// Gets the default pattern for parsing the signature.
         /// </summary>
         public static readonly Regex SignaturePatternParser
-            = new Regex(@"^(?<ClientId>[^:]+):(?<Nonce>[^:]+):(?<Timestamp>[\d]+):(?<SignatureBody>[^:]+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+            = new Regex(@"^(?<ClientId>[^:]{1,64}):(?<Nonce>[^:]{1,64}):(?<Timestamp>[\d]{1,12}):(?<SignatureBody>[^:]+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
         /// <summary>
         /// Gets the default clock skew (5 minutes).

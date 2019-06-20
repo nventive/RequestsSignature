@@ -34,6 +34,7 @@ namespace RequestsSignature.HttpClient.Tests
             };
 
             var response = await client.GetAsync(ApiController.GetSignatureValidationResultWithAuthenticationUri);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var result = await response.Content.ReadAsAsync<SignatureValidationResult>();
 
@@ -57,6 +58,7 @@ namespace RequestsSignature.HttpClient.Tests
             };
 
             var response = await client.GetAsync(ApiController.GetSignatureValidationResultWithAuthenticationUri);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var result = await response.Content.ReadAsAsync<SignatureValidationResult>();
 
@@ -100,6 +102,7 @@ namespace RequestsSignature.HttpClient.Tests
             Func<HttpRequestMessage, long> timestampClock = (r) => DateTimeOffset.UtcNow.Subtract(TimeSpan.FromHours(1)).ToUnixTimeSeconds();
             request.Properties[RequestsSignatureDelegatingHandler.TimestampClockProperty] = timestampClock;
             var response = await client.SendAsync(request);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var result = await response.Content.ReadAsAsync<SignatureValidationResult>();
 

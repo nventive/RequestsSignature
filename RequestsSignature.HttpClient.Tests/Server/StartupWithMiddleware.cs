@@ -2,6 +2,8 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using RequestsSignature.AspNetCore;
+using RequestsSignature.AspNetCore.Nonces;
 using RequestsSignature.Core;
 
 namespace RequestsSignature.HttpClient.Tests.Server
@@ -38,6 +40,8 @@ namespace RequestsSignature.HttpClient.Tests.Server
                     },
                 };
             });
+            services.AddMemoryCache();
+            services.AddSingleton<INonceRepository, MemoryCacheNonceRepository>();
             services.AddRequestsSignatureValidation();
             services.AddMvc();
         }

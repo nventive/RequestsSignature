@@ -1,6 +1,4 @@
-﻿using RequestsSignature.AspNetCore.Services;
-
-namespace RequestsSignature.AspNetCore
+﻿namespace RequestsSignature.AspNetCore
 {
     /// <summary>
     /// Results of a signature validation process.

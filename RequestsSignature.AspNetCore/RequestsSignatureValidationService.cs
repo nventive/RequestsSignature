@@ -10,9 +10,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.IO;
+using RequestsSignature.AspNetCore.Nonces;
 using RequestsSignature.Core;
 
-namespace RequestsSignature.AspNetCore.Services
+namespace RequestsSignature.AspNetCore
 {
     /// <summary>
     /// <see cref="IRequestsSignatureValidationService"/> default implementation.
@@ -174,6 +175,7 @@ namespace RequestsSignature.AspNetCore.Services
                 return result;
             }
 
+            await _nonceRepository.Add(signatureComponents.Nonce);
             result = new SignatureValidationResult(
                     SignatureValidationResultStatus.OK,
                     serverTimestamp,

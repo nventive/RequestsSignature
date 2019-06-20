@@ -1,5 +1,5 @@
-﻿using RequestsSignature.AspNetCore.Middleware;
-using RequestsSignature.AspNetCore.Services;
+﻿using RequestsSignature.AspNetCore;
+using RequestsSignature.AspNetCore.Middleware;
 
 namespace Microsoft.AspNetCore.Builder
 {

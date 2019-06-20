@@ -8,11 +8,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Options;
 using Moq;
-using RequestsSignature.AspNetCore.Services;
 using RequestsSignature.Core;
 using Xunit;
 
-namespace RequestsSignature.AspNetCore.Tests.Services
+namespace RequestsSignature.AspNetCore.Tests
 {
     public class RequestsSignatureValidationServiceTests
     {

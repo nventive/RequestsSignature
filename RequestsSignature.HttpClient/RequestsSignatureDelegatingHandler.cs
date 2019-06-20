@@ -17,7 +17,7 @@ namespace RequestsSignature.HttpClient
     {
         /// <summary>
         /// Gets the name of the property in <see cref="HttpRequestMessage.Properties"/>
-        /// that can contain a Func{HttpRequestMessage, long} that returns a timestamp.
+        /// that can contain a Func{HttpRequestMessage, long} that returns the current UTC time as Unix Epoch Seconds.
         /// </summary>
         public const string TimestampClockProperty = "TimestampClock";
 

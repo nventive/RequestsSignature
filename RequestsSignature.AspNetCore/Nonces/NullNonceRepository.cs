@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace RequestsSignature.AspNetCore
+namespace RequestsSignature.AspNetCore.Nonces
 {
     /// <summary>
     /// <see cref="INonceRepository"/> implementation that stores nothing

@@ -28,22 +28,46 @@ namespace RequestsSignature.Core
                     switch (component)
                     {
                         case SignatureBodySourceComponents.Method:
-                            result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Method.ToUpperInvariant()));
+                            if (signingRequest.Method != null)
+                            {
+                                result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Method.ToUpperInvariant()));
+                            }
+
                             break;
                         case SignatureBodySourceComponents.Scheme:
-                            result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Uri.Scheme));
+                            if (signingRequest.Uri != null && signingRequest.Uri.IsAbsoluteUri)
+                            {
+                                result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Uri.Scheme));
+                            }
+
                             break;
                         case SignatureBodySourceComponents.Host:
-                            result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Uri.Host));
+                            if (signingRequest.Uri != null && signingRequest.Uri.IsAbsoluteUri)
+                            {
+                                result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Uri.Host));
+                            }
+
                             break;
                         case SignatureBodySourceComponents.Port:
-                            result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Uri.Port.ToString(CultureInfo.InvariantCulture)));
+                            if (signingRequest.Uri != null && signingRequest.Uri.IsAbsoluteUri)
+                            {
+                                result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Uri.Port.ToString(CultureInfo.InvariantCulture)));
+                            }
+
                             break;
                         case SignatureBodySourceComponents.LocalPath:
-                            result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Uri.LocalPath));
+                            if (signingRequest.Uri != null)
+                            {
+                                result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Uri.LocalPath));
+                            }
+
                             break;
                         case SignatureBodySourceComponents.QueryString:
-                            result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Uri.Query));
+                            if (signingRequest.Uri != null)
+                            {
+                                result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Uri.Query));
+                            }
+
                             break;
                         case SignatureBodySourceComponents.Body:
                             result.AddRange(signingRequest.Body ?? Array.Empty<byte>());
