@@ -10,9 +10,9 @@ namespace RequestsSignature.HttpClient.Tests
     [Collection(ServerWithAuthenticationCollection.Name)]
     public class HttpAuthenticationIntegrationTests
     {
-        private readonly ServerFixtureWithAuthentication _fixture;
+        private readonly ServerFixture<StartupWithAuthentication> _fixture;
 
-        public HttpAuthenticationIntegrationTests(ServerFixtureWithAuthentication fixture)
+        public HttpAuthenticationIntegrationTests(ServerFixture<StartupWithAuthentication> fixture)
         {
             _fixture = fixture;
         }

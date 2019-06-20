@@ -10,9 +10,9 @@ namespace RequestsSignature.HttpClient.Tests
     [Collection(nameof(ServerWithMiddlewareCollection))]
     public class HttpMiddlewareIntegrationTests
     {
-        private readonly ServerFixtureWithMiddleware _fixture;
+        private readonly ServerFixture<StartupWithMiddleware> _fixture;
 
-        public HttpMiddlewareIntegrationTests(ServerFixtureWithMiddleware fixture)
+        public HttpMiddlewareIntegrationTests(ServerFixture<StartupWithMiddleware> fixture)
         {
             _fixture = fixture;
         }
