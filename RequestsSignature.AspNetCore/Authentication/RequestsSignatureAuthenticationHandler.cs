@@ -41,7 +41,7 @@ namespace RequestsSignature.AspNetCore.Authentication
                 case SignatureValidationResultStatus.HeaderNotFound:
                     return AuthenticateResult.NoResult();
                 case SignatureValidationResultStatus.OK:
-                    var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(Options.ClientIdClaimName, result.ClientId) }));
+                    var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(Options.ClientIdClaimName, result.ClientId) }, Scheme.Name));
                     return AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, new AuthenticationProperties(), Scheme.Name));
                 default:
                     return AuthenticateResult.Fail($"Failed Request Signature: {result.Status}");

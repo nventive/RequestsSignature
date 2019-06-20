@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using RequestsSignature.AspNetCore;
@@ -60,6 +61,28 @@ namespace RequestsSignature.HttpClient.Tests
 
             result.Status.Should().Be(SignatureValidationResultStatus.OK);
             result.ClientId.Should().Be(StartupWithMiddleware.CustomClientId);
+        }
+
+        [Fact]
+        public async Task ItShouldSignAndValidateGetRequestWithEncodedQueryString()
+        {
+            var client = new System.Net.Http.HttpClient(
+                new RequestsSignatureDelegatingHandler(
+                    new RequestsSignatureOptions
+                    {
+                        ClientId = StartupWithMiddleware.DefaultClientId,
+                        Key = StartupWithMiddleware.DefaultKey,
+                    }))
+            {
+                BaseAddress = _fixture.ServerUri,
+            };
+
+            var response = await client.GetAsync($"{ApiController.GetSignatureValidationResultGetUri}?search={WebUtility.UrlEncode("value with spaces")}");
+
+            var result = await response.Content.ReadAsAsync<SignatureValidationResult>();
+
+            result.Status.Should().Be(SignatureValidationResultStatus.OK);
+            result.ClientId.Should().Be(StartupWithMiddleware.DefaultClientId);
         }
     }
 }

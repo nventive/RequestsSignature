@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using RequestsSignature.AspNetCore;
@@ -31,7 +32,7 @@ namespace RequestsSignature.HttpClient.Tests
                 BaseAddress = _fixture.ServerUri,
             };
 
-            var response = await client.GetAsync(ApiController.GetSignatureValidationResultGetUri);
+            var response = await client.GetAsync(ApiController.GetSignatureValidationResultWithAuthenticationUri);
 
             var result = await response.Content.ReadAsAsync<SignatureValidationResult>();
 
@@ -54,12 +55,30 @@ namespace RequestsSignature.HttpClient.Tests
                 BaseAddress = _fixture.ServerUri,
             };
 
-            var response = await client.GetAsync(ApiController.GetSignatureValidationResultGetUri);
+            var response = await client.GetAsync(ApiController.GetSignatureValidationResultWithAuthenticationUri);
 
             var result = await response.Content.ReadAsAsync<SignatureValidationResult>();
 
             result.Status.Should().Be(SignatureValidationResultStatus.OK);
             result.ClientId.Should().Be(StartupWithMiddleware.CustomClientId);
+        }
+
+        [Fact]
+        public async Task ItShouldRefuseAuthenticationIfWrongSignature()
+        {
+            var client = new System.Net.Http.HttpClient(
+                new RequestsSignatureDelegatingHandler(
+                    new RequestsSignatureOptions
+                    {
+                        ClientId = StartupWithMiddleware.CustomClientId,
+                        Key = "wrongkey",
+                    }))
+            {
+                BaseAddress = _fixture.ServerUri,
+            };
+
+            var response = await client.GetAsync(ApiController.GetSignatureValidationResultWithAuthenticationUri);
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
     }
 }
