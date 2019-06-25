@@ -5,6 +5,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -28,5 +29,12 @@
   <ItemGroup>
     <ProjectReference Include="..\RequestsSignature.Core\RequestsSignature.Core.csproj" />
   </ItemGroup>
+
+  <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
+    <ItemGroup>
+      <BuildOutputInPackage Include="$(OutputPath)RequestsSignature.Core.dll" />
+      <BuildOutputInPackage Include="$(OutputPath)RequestsSignature.Core.xml" />
+    </ItemGroup>
+  </Target>
 
 </Project>
