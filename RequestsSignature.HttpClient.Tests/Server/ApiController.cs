@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RequestsSignature.AspNetCore.Authentication;
+using RequestsSignature.AspNetCore.Mvc;
 
 namespace RequestsSignature.HttpClient.Tests.Server
 {
@@ -10,6 +11,8 @@ namespace RequestsSignature.HttpClient.Tests.Server
     {
         public const string GetSignatureValidationResultGetUri = "";
         public const string GetSignatureValidationResultWithAuthenticationUri = "with-auth";
+        public const string GetSignatureValidationResultWithAttributeUri = "with-attribute";
+        public const string GetSignatureValidationResultWithAttributeDisabledUri = "with-attribute-disabled";
 
         [HttpGet(GetSignatureValidationResultGetUri)]
         public IActionResult GetSignatureValidationResultGet()
@@ -18,6 +21,17 @@ namespace RequestsSignature.HttpClient.Tests.Server
         [HttpGet(GetSignatureValidationResultWithAuthenticationUri)]
         [Authorize(AuthenticationSchemes = RequestsSignatureAuthenticationConstants.AuthenticationScheme)]
         public IActionResult GetSignatureValidationResultWithAuthentication()
+            => Ok(HttpContext.GetSignatureValidationResult());
+
+        [HttpGet(GetSignatureValidationResultWithAttributeUri)]
+        [RequireRequestsSignatureValidation(StartupWithMiddleware.DefaultClientId)]
+        public IActionResult GetSignatureValidationResultWithAttribute()
+            => Ok(HttpContext.GetSignatureValidationResult());
+
+        [HttpGet(GetSignatureValidationResultWithAttributeDisabledUri)]
+        [RequireRequestsSignatureValidation]
+        [IgnoreRequestsSignatureValidation]
+        public IActionResult GetSignatureValidationResultWithAttributeDisabled()
             => Ok(HttpContext.GetSignatureValidationResult());
     }
 }

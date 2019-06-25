@@ -27,7 +27,7 @@ namespace RequestsSignature.HttpClient.Tests.Server
             {
                 options.Clients = new[]
                 {
-                    new AspNetCore.RequestsSignatureClientOptions
+                    new RequestsSignatureClientOptions
                     {
                         ClientId = DefaultClientId,
                         Key = DefaultKey,

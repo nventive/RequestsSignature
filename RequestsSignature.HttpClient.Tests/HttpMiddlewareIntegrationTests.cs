@@ -139,5 +139,38 @@ namespace RequestsSignature.HttpClient.Tests
             result = await response.Content.ReadAsAsync<SignatureValidationResult>();
             result.Status.Should().Be(SignatureValidationResultStatus.NonceHasBeenUsedBefore);
         }
+
+        [Fact]
+        public async Task ItShouldRequireRequestsSignatureValidationWithFilter()
+        {
+            var client = new System.Net.Http.HttpClient(
+                new RequestsSignatureDelegatingHandler(
+                    new RequestsSignatureOptions
+                    {
+                        ClientId = StartupWithMiddleware.CustomClientId,
+                        Key = StartupWithMiddleware.CustomKey,
+                        SignatureBodySourceComponents = StartupWithMiddleware.CustomSignatureBodySourceComponents,
+                    }))
+            {
+                BaseAddress = _fixture.ServerUri,
+            };
+
+            var response = await client.GetAsync(ApiController.GetSignatureValidationResultWithAttributeUri);
+
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task ItShouldRequireRequestsSignatureValidationWithFilterDisabled()
+        {
+            var client = new System.Net.Http.HttpClient
+            {
+                BaseAddress = _fixture.ServerUri,
+            };
+
+            var response = await client.GetAsync(ApiController.GetSignatureValidationResultWithAttributeDisabledUri);
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
     }
 }
