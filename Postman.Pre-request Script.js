@@ -1,12 +1,12 @@
 const sdk = require('postman-collection');
 
 // Parameters
-const clientId = pm.variables.get("signatureClientId") || pm.environment.get("signatureClientId");
-if (!clientId) {
+const signatureClientId = pm.variables.get("signatureClientId") || pm.environment.get("signatureClientId");
+if (!signatureClientId) {
   throw new Error("Missing signatureClientId variable to configure the client id for request signature.");
 }
-const key = pm.variables.get("signatureKey") || pm.environment.get("signatureKey");
-if (!key) {
+const signatureKey = pm.variables.get("signatureKey") || pm.environment.get("signatureKey");
+if (!signatureKey) {
   throw new Error("Missing signatureKey variable to configure the key for request signature.");
 }
 
@@ -94,10 +94,10 @@ signatureBodySourceComponents.forEach(component => {
   }
 });
 
-const signatureBody = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(byteArrayToWordArray(signatureBodySource), key));
+const signatureBody = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(byteArrayToWordArray(signatureBodySource), signatureKey));
 
 const signature = signaturePattern
-  .replace("{ClientId}", clientId)
+  .replace("{ClientId}", signatureClientId)
   .replace("{Nonce}", `${nonce}`)
   .replace("{Timestamp}", `${timestamp}`)
   .replace("{SignatureBody}", signatureBody);

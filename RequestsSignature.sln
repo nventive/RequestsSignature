@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 		GitVersion.yml = GitVersion.yml
 		GlobalSuppressions.cs = GlobalSuppressions.cs
+		Postman.Pre-request Script.js = Postman.Pre-request Script.js
 		README.md = README.md
 		stylecop.json = stylecop.json
 		TestsSuppressions.cs = TestsSuppressions.cs
@@ -20,13 +21,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestsSignature.AspNetCor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestsSignature.AspNetCore.Tests", "RequestsSignature.AspNetCore.Tests\RequestsSignature.AspNetCore.Tests.csproj", "{789576E5-6CC3-47BF-A013-32394FFBF3D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestsSignature.HttpClient", "RequestsSignature.HttpClient\RequestsSignature.HttpClient.csproj", "{07925524-6421-484D-830F-59323B18CCA0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestsSignature.HttpClient", "RequestsSignature.HttpClient\RequestsSignature.HttpClient.csproj", "{07925524-6421-484D-830F-59323B18CCA0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestsSignature.HttpClient.Tests", "RequestsSignature.HttpClient.Tests\RequestsSignature.HttpClient.Tests.csproj", "{99660895-C380-45E7-9CF2-0052A5E1B69B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestsSignature.HttpClient.Tests", "RequestsSignature.HttpClient.Tests\RequestsSignature.HttpClient.Tests.csproj", "{99660895-C380-45E7-9CF2-0052A5E1B69B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestsSignature.Core", "RequestsSignature.Core\RequestsSignature.Core.csproj", "{7F0A764A-31EF-4E2F-9DA7-254C15F0D5DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestsSignature.Core", "RequestsSignature.Core\RequestsSignature.Core.csproj", "{7F0A764A-31EF-4E2F-9DA7-254C15F0D5DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestsSignature.Core.Tests", "RequestsSignature.Core.Tests\RequestsSignature.Core.Tests.csproj", "{FECE4F2B-A8FE-42D3-8727-BAE949B67DB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestsSignature.Core.Tests", "RequestsSignature.Core.Tests\RequestsSignature.Core.Tests.csproj", "{FECE4F2B-A8FE-42D3-8727-BAE949B67DB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
