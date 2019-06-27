@@ -45,14 +45,17 @@ namespace RequestsSignature.HttpClient.Tests
         [Fact]
         public async Task ItShouldSignAndValidateGetRequestWithCustomConfig()
         {
-            var client = new System.Net.Http.HttpClient(
-                new RequestsSignatureDelegatingHandler(
-                    new RequestsSignatureOptions
-                    {
-                        ClientId = StartupWithMiddleware.CustomClientId,
-                        Key = StartupWithMiddleware.CustomKey,
-                        SignatureBodySourceComponents = StartupWithMiddleware.CustomSignatureBodySourceComponents,
-                    }))
+            var requestsSignatureOptions = new RequestsSignatureOptions
+            {
+                ClientId = StartupWithMiddleware.CustomClientId,
+                Key = StartupWithMiddleware.CustomKey,
+            };
+            foreach (var sourceComponent in StartupWithMiddleware.CustomSignatureBodySourceComponents)
+            {
+                requestsSignatureOptions.SignatureBodySourceComponents.Add(sourceComponent);
+            }
+
+            var client = new System.Net.Http.HttpClient(new RequestsSignatureDelegatingHandler(requestsSignatureOptions))
             {
                 BaseAddress = _fixture.ServerUri,
             };

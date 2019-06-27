@@ -92,8 +92,12 @@ namespace RequestsSignature.HttpClient
         {
             request.Headers.Remove(_options.HeaderName);
 
+            var signatureBodySourceComponents = _options.SignatureBodySourceComponents.Any()
+                ? _options.SignatureBodySourceComponents
+                : DefaultConstants.SignatureBodySourceComponents;
+
             byte[] body = null;
-            if (request.Content != null && _options.SignatureBodySourceComponents.Contains(SignatureBodySourceComponents.Body))
+            if (request.Content != null && signatureBodySourceComponents.Contains(SignatureBodySourceComponents.Body))
             {
                 body = await request.Content.ReadAsByteArrayAsync();
             }
@@ -105,7 +109,7 @@ namespace RequestsSignature.HttpClient
                 Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture),
                 GetTimestamp(request),
                 _options.ClientId,
-                _options.SignatureBodySourceComponents,
+                signatureBodySourceComponents,
                 body);
 
             var signatureBodySource = await _signatureBodySourceBuilder.Build(signatureBodySourceParameters);
@@ -147,11 +151,6 @@ namespace RequestsSignature.HttpClient
             if (string.IsNullOrWhiteSpace(_options.SignaturePatternBuilder))
             {
                 throw new RequestsSignatureException($"Missing {nameof(_options.SignaturePatternBuilder)} in {nameof(RequestsSignatureDelegatingHandler)} options.");
-            }
-
-            if (!_options.SignatureBodySourceComponents.Any())
-            {
-                throw new RequestsSignatureException($"No {nameof(_options.SignatureBodySourceComponents)} is defined in {nameof(RequestsSignatureDelegatingHandler)} options.");
             }
         }
     }

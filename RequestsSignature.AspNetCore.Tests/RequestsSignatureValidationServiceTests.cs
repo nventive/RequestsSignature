@@ -205,14 +205,11 @@ namespace RequestsSignature.AspNetCore.Tests
         {
             var configureOptions = new ConfigureOptions<RequestsSignatureOptions>(configure ?? (options =>
             {
-                options.Clients = new List<RequestsSignatureClientOptions>
+                options.Clients.Add(new RequestsSignatureClientOptions
                 {
-                    new RequestsSignatureClientOptions
-                    {
-                        ClientId = ClientId,
-                        Key = ClientKey,
-                    },
-                };
+                    ClientId = ClientId,
+                    Key = ClientKey,
+                });
             }));
             var optionsFactory = new OptionsFactory<RequestsSignatureOptions>(new[] { configureOptions }, Enumerable.Empty<IPostConfigureOptions<RequestsSignatureOptions>>());
             return new OptionsMonitor<RequestsSignatureOptions>(optionsFactory, Enumerable.Empty<IOptionsChangeTokenSource<RequestsSignatureOptions>>(), new OptionsCache<RequestsSignatureOptions>());

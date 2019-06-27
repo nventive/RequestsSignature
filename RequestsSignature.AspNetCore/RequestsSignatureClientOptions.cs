@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using RequestsSignature.Core;
 
 namespace RequestsSignature.AspNetCore
 {
@@ -9,8 +7,6 @@ namespace RequestsSignature.AspNetCore
     /// </summary>
     public class RequestsSignatureClientOptions
     {
-        private IList<string> _signatureBodySourceComponents;
-
         /// <summary>
         /// Gets or sets the client id.
         /// </summary>
@@ -22,14 +18,9 @@ namespace RequestsSignature.AspNetCore
         public string Key { get; set; }
 
         /// <summary>
-        /// Gets or sets the ordered list of singature body source components used to compute
+        /// Gets the ordered list of signature body source components used to compute
         /// the value that will be signed and create the signature body.
         /// </summary>
-        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Allow easy binding.")]
-        public IList<string> SignatureBodySourceComponents
-        {
-            get => _signatureBodySourceComponents ?? (_signatureBodySourceComponents = DefaultConstants.SignatureBodySourceComponents);
-            set => _signatureBodySourceComponents = value;
-        }
+        public IList<string> SignatureBodySourceComponents { get; } = new List<string>();
     }
 }

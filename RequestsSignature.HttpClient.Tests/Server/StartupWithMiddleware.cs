@@ -25,20 +25,22 @@ namespace RequestsSignature.HttpClient.Tests.Server
             services.AddOptions();
             services.Configure<AspNetCore.RequestsSignatureOptions>(options =>
             {
-                options.Clients = new[]
+                options.Clients.Add(new RequestsSignatureClientOptions
                 {
-                    new RequestsSignatureClientOptions
-                    {
-                        ClientId = DefaultClientId,
-                        Key = DefaultKey,
-                    },
-                    new AspNetCore.RequestsSignatureClientOptions
-                    {
-                        ClientId = CustomClientId,
-                        Key = CustomKey,
-                        SignatureBodySourceComponents = CustomSignatureBodySourceComponents,
-                    },
+                    ClientId = DefaultClientId,
+                    Key = DefaultKey,
+                });
+                var customClient = new RequestsSignatureClientOptions
+                {
+                    ClientId = CustomClientId,
+                    Key = CustomKey,
                 };
+                foreach (var componentSource in CustomSignatureBodySourceComponents)
+                {
+                    customClient.SignatureBodySourceComponents.Add(componentSource);
+                }
+
+                options.Clients.Add(customClient);
             });
             services.AddMemoryCache();
             services.AddSingleton<INonceRepository, MemoryCacheNonceRepository>();

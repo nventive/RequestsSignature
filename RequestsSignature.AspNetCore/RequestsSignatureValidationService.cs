@@ -141,8 +141,12 @@ namespace RequestsSignature.AspNetCore
                 return result;
             }
 
+            var signatureBodySourceComponents = clientOptions.SignatureBodySourceComponents.Any()
+                ? clientOptions.SignatureBodySourceComponents
+                : DefaultConstants.SignatureBodySourceComponents;
+
             byte[] body = null;
-            if (clientOptions.SignatureBodySourceComponents.Contains(SignatureBodySourceComponents.Body))
+            if (signatureBodySourceComponents.Contains(SignatureBodySourceComponents.Body))
             {
                 request.EnableRewind();
                 request.Body.Seek(0, SeekOrigin.Begin);
@@ -162,7 +166,7 @@ namespace RequestsSignature.AspNetCore
                 signatureComponents.Nonce,
                 signatureComponents.Timestamp,
                 clientOptions.ClientId,
-                clientOptions.SignatureBodySourceComponents,
+                signatureBodySourceComponents,
                 body);
 
             var signatureBodySource = await _signatureBodySourceBuilder.Build(signatureBodySourceParameters);
@@ -228,11 +232,6 @@ namespace RequestsSignature.AspNetCore
                 if (string.IsNullOrEmpty(clientOptions.Key))
                 {
                     throw new RequestsSignatureException($"Property {nameof(clientOptions.Key)} is null or empty for client {clientOptions.ClientId}.");
-                }
-
-                if (!clientOptions.SignatureBodySourceComponents.Any())
-                {
-                    throw new RequestsSignatureException($"Property {nameof(clientOptions.SignatureBodySourceComponents)} is empty for client {clientOptions.ClientId}. No signature can be computed.");
                 }
             }
         }

@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using RequestsSignature.AspNetCore;
 using RequestsSignature.AspNetCore.Authentication;
 using RequestsSignature.Core;
 
@@ -24,20 +25,22 @@ namespace RequestsSignature.HttpClient.Tests.Server
             services.AddOptions();
             services.Configure<AspNetCore.RequestsSignatureOptions>(options =>
             {
-                options.Clients = new[]
+                options.Clients.Add(new RequestsSignatureClientOptions
                 {
-                    new AspNetCore.RequestsSignatureClientOptions
-                    {
-                        ClientId = DefaultClientId,
-                        Key = DefaultKey,
-                    },
-                    new AspNetCore.RequestsSignatureClientOptions
-                    {
-                        ClientId = CustomClientId,
-                        Key = CustomKey,
-                        SignatureBodySourceComponents = CustomSignatureBodySourceComponents,
-                    },
+                    ClientId = DefaultClientId,
+                    Key = DefaultKey,
+                });
+                var customClient = new RequestsSignatureClientOptions
+                {
+                    ClientId = CustomClientId,
+                    Key = CustomKey,
                 };
+                foreach (var componentSource in CustomSignatureBodySourceComponents)
+                {
+                    customClient.SignatureBodySourceComponents.Add(componentSource);
+                }
+
+                options.Clients.Add(customClient);
             });
             services.AddRequestsSignatureValidation();
             services.AddMvc();

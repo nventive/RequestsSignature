@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using RequestsSignature.Core;
 
@@ -16,21 +15,15 @@ namespace RequestsSignature.AspNetCore
         /// </summary>
         public const bool DefaultDisabled = false;
 
-        private IEnumerable<RequestsSignatureClientOptions> _clients;
-
         /// <summary>
         /// Gets or sets a value indicating whether the requests signature validation is disabled.
         /// </summary>
         public bool Disabled { get; set; } = DefaultDisabled;
 
         /// <summary>
-        /// Gets or sets individual <see cref="RequestsSignatureClientOptions"/>.
+        /// Gets individual <see cref="RequestsSignatureClientOptions"/>.
         /// </summary>
-        public IEnumerable<RequestsSignatureClientOptions> Clients
-        {
-            get => _clients ?? (_clients = Enumerable.Empty<RequestsSignatureClientOptions>());
-            set => _clients = value;
-        }
+        public IList<RequestsSignatureClientOptions> Clients { get; } = new List<RequestsSignatureClientOptions>();
 
         /// <summary>
         /// Gets or sets the allowed lag of time in either direction (past/future)
