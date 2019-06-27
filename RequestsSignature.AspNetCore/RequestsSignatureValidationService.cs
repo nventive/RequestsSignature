@@ -21,7 +21,8 @@ namespace RequestsSignature.AspNetCore
     internal class RequestsSignatureValidationService : IRequestsSignatureValidationService
     {
         private readonly IOptionsMonitor<RequestsSignatureOptions> _optionsMonitor;
-        private readonly IRequestSigner _requestSigner;
+        private readonly ISignatureBodySourceBuilder _signatureBodySourceBuilder;
+        private readonly ISignatureBodySigner _signatureBodySigner;
         private readonly ISystemClock _clock;
         private readonly INonceRepository _nonceRepository;
         private readonly ILogger _logger;
@@ -33,19 +34,22 @@ namespace RequestsSignature.AspNetCore
         /// Initializes a new instance of the <see cref="RequestsSignatureValidationService"/> class.
         /// </summary>
         /// <param name="options">The <see cref="RequestsSignatureOptions"/>.</param>
-        /// <param name="requestSigner">The <see cref="IRequestSigner"/>.</param>
+        /// <param name="signatureBodySourceBuilder">The <see cref="ISignatureBodySourceBuilder"/>.</param>
+        /// <param name="signatureBodySigner">The <see cref="ISignatureBodySigner"/>.</param>
         /// <param name="clock">The <see cref="ISystemClock"/> instance for time retrieval. Defaults to <see cref="SystemClock"/>.</param>
         /// <param name="nonceRepository">The <see cref="INonceRepository"/> to use. Defaults to <see cref="NullNonceRepository"/>.</param>
         /// <param name="logger">The <see cref="ILogger"/> to use. Defaults to <see cref="NullLogger"/>.</param>
         public RequestsSignatureValidationService(
             IOptionsMonitor<RequestsSignatureOptions> options,
-            IRequestSigner requestSigner,
+            ISignatureBodySourceBuilder signatureBodySourceBuilder,
+            ISignatureBodySigner signatureBodySigner,
             ISystemClock clock = null,
             INonceRepository nonceRepository = null,
             ILogger<RequestsSignatureValidationService> logger = null)
         {
             _optionsMonitor = options ?? throw new ArgumentNullException(nameof(options));
-            _requestSigner = requestSigner ?? throw new ArgumentNullException(nameof(requestSigner));
+            _signatureBodySourceBuilder = signatureBodySourceBuilder ?? throw new ArgumentNullException(nameof(signatureBodySourceBuilder));
+            _signatureBodySigner = signatureBodySigner ?? throw new ArgumentNullException(nameof(signatureBodySigner));
             _clock = clock ?? new SystemClock();
             _nonceRepository = nonceRepository ?? NullNonceRepository.Instance;
             _logger = (ILogger)logger ?? NullLogger.Instance;
@@ -151,18 +155,21 @@ namespace RequestsSignature.AspNetCore
                 request.Body.Seek(0, SeekOrigin.Begin);
             }
 
-            var signingRequest = new SigningBodyRequest(
+            var signatureBodySourceParameters = new SignatureBodySourceParameters(
                 request.Method,
                 new Uri($"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}"),
                 request.Headers.ToDictionary(x => x.Key, x => x.Value.ToString()),
                 signatureComponents.Nonce,
                 signatureComponents.Timestamp,
                 clientOptions.ClientId,
-                clientOptions.Key,
                 clientOptions.SignatureBodySourceComponents,
                 body);
 
-            var signature = await _requestSigner.CreateSignatureBody(signingRequest);
+            var signatureBodySource = await _signatureBodySourceBuilder.Build(signatureBodySourceParameters);
+
+            var signatureBodyParameters = new SignatureBodyParameters(signatureBodySource, clientOptions.Key);
+            var signature = await _signatureBodySigner.Sign(signatureBodyParameters);
+
             if (!string.Equals(signature, signatureComponents.SignatureBody, StringComparison.Ordinal))
             {
                 result = new SignatureValidationResult(
@@ -170,7 +177,8 @@ namespace RequestsSignature.AspNetCore
                     serverTimestamp,
                     signatureValue: signatureValue,
                     clientId: clientOptions.ClientId,
-                    computedSignature: signature);
+                    computedSignature: signature,
+                    signatureBodySource: signatureBodySource);
                 _logger.SignatureValidationFailed(result);
                 return result;
             }

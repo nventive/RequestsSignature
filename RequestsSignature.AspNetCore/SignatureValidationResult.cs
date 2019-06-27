@@ -1,4 +1,6 @@
-﻿namespace RequestsSignature.AspNetCore
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace RequestsSignature.AspNetCore
 {
     /// <summary>
     /// Results of a signature validation process.
@@ -14,18 +16,21 @@
         /// <param name="clientId">The matched client id, if any.</param>
         /// <param name="signatureValue">The complete signature value, if any.</param>
         /// <param name="computedSignature">The computed signature (server-side), if any.</param>
+        /// <param name="signatureBodySource">The source data for computing the signature, if any.</param>
         public SignatureValidationResult(
             SignatureValidationResultStatus status,
             long serverTimestamp,
             string clientId = null,
             string signatureValue = null,
-            string computedSignature = null)
+            string computedSignature = null,
+            byte[] signatureBodySource = null)
         {
             Status = status;
             ServerTimestamp = serverTimestamp;
             ClientId = clientId;
             SignatureValue = signatureValue;
             ComputedSignature = computedSignature;
+            SignatureBodySource = signatureBodySource;
         }
 
         /// <summary>
@@ -53,5 +58,11 @@
         /// Gets the computed signature (server-side), if any.
         /// </summary>
         public string ComputedSignature { get; }
+
+        /// <summary>
+        /// Gets the source data for computing the signature, if any.
+        /// </summary>
+        [SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "OK in that case - binary data.")]
+        public byte[] SignatureBodySource { get; }
     }
 }

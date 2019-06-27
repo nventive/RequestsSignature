@@ -25,10 +25,12 @@ namespace RequestsSignature.AspNetCore.Tests
             {
                 options.Disabled = true;
             });
-            var requestSignerMock = new Mock<IRequestSigner>();
+            var signatureBodySourceBuilderMock = new Mock<ISignatureBodySourceBuilder>();
+            var signatureBodySignerMock = new Mock<ISignatureBodySigner>();
             var service = new RequestsSignatureValidationService(
                 optionsMonitor,
-                requestSignerMock.Object);
+                signatureBodySourceBuilderMock.Object,
+                signatureBodySignerMock.Object);
 
             var httpRequest = new DefaultHttpRequest(new DefaultHttpContext());
             var result = await service.Validate(httpRequest);
@@ -40,10 +42,12 @@ namespace RequestsSignature.AspNetCore.Tests
         public async Task ItShouldValidateHeaderPresence()
         {
             var optionsMonitor = CreateOptionsMonitor();
-            var requestSignerMock = new Mock<IRequestSigner>();
+            var signatureBodySourceBuilderMock = new Mock<ISignatureBodySourceBuilder>();
+            var signatureBodySignerMock = new Mock<ISignatureBodySigner>();
             var service = new RequestsSignatureValidationService(
                 optionsMonitor,
-                requestSignerMock.Object);
+                signatureBodySourceBuilderMock.Object,
+                signatureBodySignerMock.Object);
 
             var httpRequest = new DefaultHttpRequest(new DefaultHttpContext());
             var result = await service.Validate(httpRequest);
@@ -55,10 +59,12 @@ namespace RequestsSignature.AspNetCore.Tests
         public async Task ItShouldValidateHeaderFormat()
         {
             var optionsMonitor = CreateOptionsMonitor();
-            var requestSignerMock = new Mock<IRequestSigner>();
+            var signatureBodySourceBuilderMock = new Mock<ISignatureBodySourceBuilder>();
+            var signatureBodySignerMock = new Mock<ISignatureBodySigner>();
             var service = new RequestsSignatureValidationService(
                 optionsMonitor,
-                requestSignerMock.Object);
+                signatureBodySourceBuilderMock.Object,
+                signatureBodySignerMock.Object);
 
             var httpRequest = new DefaultHttpRequest(new DefaultHttpContext());
             httpRequest.Headers[optionsMonitor.CurrentValue.HeaderName] = "foo";
@@ -72,10 +78,12 @@ namespace RequestsSignature.AspNetCore.Tests
         public async Task ItShouldValidateClientId()
         {
             var optionsMonitor = CreateOptionsMonitor();
-            var requestSignerMock = new Mock<IRequestSigner>();
+            var signatureBodySourceBuilderMock = new Mock<ISignatureBodySourceBuilder>();
+            var signatureBodySignerMock = new Mock<ISignatureBodySigner>();
             var service = new RequestsSignatureValidationService(
                 optionsMonitor,
-                requestSignerMock.Object);
+                signatureBodySourceBuilderMock.Object,
+                signatureBodySignerMock.Object);
 
             var httpRequest = new DefaultHttpRequest(new DefaultHttpContext());
             httpRequest.Headers[optionsMonitor.CurrentValue.HeaderName] = "WrongClientId:asdf:0:asdf";
@@ -91,13 +99,15 @@ namespace RequestsSignature.AspNetCore.Tests
         {
             var nonce = Guid.NewGuid().ToString();
             var optionsMonitor = CreateOptionsMonitor();
-            var requestSignerMock = new Mock<IRequestSigner>();
+            var signatureBodySourceBuilderMock = new Mock<ISignatureBodySourceBuilder>();
+            var signatureBodySignerMock = new Mock<ISignatureBodySigner>();
             var nonceRepository = new Mock<INonceRepository>();
             nonceRepository.Setup(x => x.Exists(nonce))
                 .ReturnsAsync(true);
             var service = new RequestsSignatureValidationService(
                 optionsMonitor,
-                requestSignerMock.Object,
+                signatureBodySourceBuilderMock.Object,
+                signatureBodySignerMock.Object,
                 nonceRepository: nonceRepository.Object);
 
             var httpRequest = new DefaultHttpRequest(new DefaultHttpContext());
@@ -113,10 +123,12 @@ namespace RequestsSignature.AspNetCore.Tests
         public async Task ItShouldValidateTimestamp()
         {
             var optionsMonitor = CreateOptionsMonitor();
-            var requestSignerMock = new Mock<IRequestSigner>();
+            var signatureBodySourceBuilderMock = new Mock<ISignatureBodySourceBuilder>();
+            var signatureBodySignerMock = new Mock<ISignatureBodySigner>();
             var service = new RequestsSignatureValidationService(
                 optionsMonitor,
-                requestSignerMock.Object);
+                signatureBodySourceBuilderMock.Object,
+                signatureBodySignerMock.Object);
 
             var now = new SystemClock().UtcNow;
             var timestamp = now.Add(optionsMonitor.CurrentValue.ClockSkew).AddMinutes(1);
@@ -134,12 +146,14 @@ namespace RequestsSignature.AspNetCore.Tests
         {
             var expectedSignature = "expectedSignature";
             var optionsMonitor = CreateOptionsMonitor();
-            var requestSignerMock = new Mock<IRequestSigner>();
-            requestSignerMock.Setup(x => x.CreateSignatureBody(It.IsAny<SigningBodyRequest>()))
+            var signatureBodySourceBuilderMock = new Mock<ISignatureBodySourceBuilder>();
+            var signatureBodySignerMock = new Mock<ISignatureBodySigner>();
+            signatureBodySignerMock.Setup(x => x.Sign(It.IsAny<SignatureBodyParameters>()))
                 .ReturnsAsync(expectedSignature);
             var service = new RequestsSignatureValidationService(
                 optionsMonitor,
-                requestSignerMock.Object);
+                signatureBodySourceBuilderMock.Object,
+                signatureBodySignerMock.Object);
 
             var timestamp = new SystemClock().UtcNow.ToUnixTimeSeconds();
             var httpRequest = new DefaultHttpRequest(new DefaultHttpContext())
@@ -162,12 +176,14 @@ namespace RequestsSignature.AspNetCore.Tests
         {
             var expectedSignature = "expectedSignature";
             var optionsMonitor = CreateOptionsMonitor();
-            var requestSignerMock = new Mock<IRequestSigner>();
-            requestSignerMock.Setup(x => x.CreateSignatureBody(It.IsAny<SigningBodyRequest>()))
+            var signatureBodySourceBuilderMock = new Mock<ISignatureBodySourceBuilder>();
+            var signatureBodySignerMock = new Mock<ISignatureBodySigner>();
+            signatureBodySignerMock.Setup(x => x.Sign(It.IsAny<SignatureBodyParameters>()))
                 .ReturnsAsync(expectedSignature);
             var service = new RequestsSignatureValidationService(
                 optionsMonitor,
-                requestSignerMock.Object);
+                signatureBodySourceBuilderMock.Object,
+                signatureBodySignerMock.Object);
 
             var timestamp = new SystemClock().UtcNow.ToUnixTimeSeconds();
             var httpRequest = new DefaultHttpRequest(new DefaultHttpContext())

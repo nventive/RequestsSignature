@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 
 namespace RequestsSignature.Core
 {
     /// <summary>
-    /// Holds parameters for signing a request.
+    /// Holds parameters for building the signature body source.
     /// </summary>
-    public class SigningBodyRequest
+    public class SignatureBodySourceParameters
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SigningBodyRequest"/> class.
+        /// Initializes a new instance of the <see cref="SignatureBodySourceParameters"/> class.
         /// </summary>
         /// <param name="method">The request method.</param>
         /// <param name="uri">The request <see cref="Uri"/>.</param>
@@ -19,17 +18,15 @@ namespace RequestsSignature.Core
         /// <param name="nonce">The nonce.</param>
         /// <param name="timestamp">The timestamp.</param>
         /// <param name="clientId">The client id.</param>
-        /// <param name="key">The key.</param>
         /// <param name="signatureBodySourceComponents">The signature body components.</param>
         /// <param name="body">The request body, if any.</param>
-        public SigningBodyRequest(
+        public SignatureBodySourceParameters(
             string method,
             Uri uri,
             IDictionary<string, string> headers,
             string nonce,
             long timestamp,
             string clientId,
-            string key,
             IList<string> signatureBodySourceComponents,
             byte[] body = null)
         {
@@ -39,7 +36,6 @@ namespace RequestsSignature.Core
             Nonce = nonce;
             Timestamp = timestamp;
             ClientId = clientId;
-            Key = key;
             SignatureBodySourceComponents = signatureBodySourceComponents;
             Body = body;
         }
@@ -79,11 +75,6 @@ namespace RequestsSignature.Core
         /// Gets the client id.
         /// </summary>
         public string ClientId { get; }
-
-        /// <summary>
-        /// Gets the signature key.
-        /// </summary>
-        public string Key { get; }
 
         /// <summary>
         /// Gets the ordered list of singature body source components used to compute

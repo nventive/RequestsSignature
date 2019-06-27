@@ -10,8 +10,8 @@ namespace RequestsSignature.Core
         /// <summary>
         /// Builds the source value for the signature body.
         /// </summary>
-        /// <param name="signingRequest">The <see cref="SigningBodyRequest"/>.</param>
+        /// <param name="parameters">The <see cref="SignatureBodySourceParameters"/>.</param>
         /// <returns>The source value that needs to be signed.</returns>
-        Task<byte[]> Build(SigningBodyRequest signingRequest);
+        Task<byte[]> Build(SignatureBodySourceParameters parameters);
     }
 }

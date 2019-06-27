@@ -12,78 +12,78 @@ namespace RequestsSignature.Core
     public class SignatureBodySourceBuilder : ISignatureBodySourceBuilder
     {
         /// <inheritdoc />
-        public async Task<byte[]> Build(SigningBodyRequest signingRequest)
+        public async Task<byte[]> Build(SignatureBodySourceParameters parameters)
         {
-            if (signingRequest == null)
+            if (parameters == null)
             {
-                throw new ArgumentNullException(nameof(signingRequest));
+                throw new ArgumentNullException(nameof(parameters));
             }
 
             var result = new List<byte>();
 
-            if (signingRequest.SignatureBodySourceComponents != null)
+            if (parameters.SignatureBodySourceComponents != null)
             {
-                foreach (var component in signingRequest.SignatureBodySourceComponents)
+                foreach (var component in parameters.SignatureBodySourceComponents)
                 {
                     switch (component)
                     {
                         case SignatureBodySourceComponents.Method:
-                            if (signingRequest.Method != null)
+                            if (parameters.Method != null)
                             {
-                                result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Method.ToUpperInvariant()));
+                                result.AddRange(Encoding.UTF8.GetBytes(parameters.Method.ToUpperInvariant()));
                             }
 
                             break;
                         case SignatureBodySourceComponents.Scheme:
-                            if (signingRequest.Uri != null && signingRequest.Uri.IsAbsoluteUri)
+                            if (parameters.Uri != null && parameters.Uri.IsAbsoluteUri)
                             {
-                                result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Uri.Scheme));
+                                result.AddRange(Encoding.UTF8.GetBytes(parameters.Uri.Scheme));
                             }
 
                             break;
                         case SignatureBodySourceComponents.Host:
-                            if (signingRequest.Uri != null && signingRequest.Uri.IsAbsoluteUri)
+                            if (parameters.Uri != null && parameters.Uri.IsAbsoluteUri)
                             {
-                                result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Uri.Host));
+                                result.AddRange(Encoding.UTF8.GetBytes(parameters.Uri.Host));
                             }
 
                             break;
                         case SignatureBodySourceComponents.Port:
-                            if (signingRequest.Uri != null && signingRequest.Uri.IsAbsoluteUri)
+                            if (parameters.Uri != null && parameters.Uri.IsAbsoluteUri)
                             {
-                                result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Uri.Port.ToString(CultureInfo.InvariantCulture)));
+                                result.AddRange(Encoding.UTF8.GetBytes(parameters.Uri.Port.ToString(CultureInfo.InvariantCulture)));
                             }
 
                             break;
                         case SignatureBodySourceComponents.LocalPath:
-                            if (signingRequest.Uri != null)
+                            if (parameters.Uri != null)
                             {
-                                result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Uri.LocalPath));
+                                result.AddRange(Encoding.UTF8.GetBytes(parameters.Uri.LocalPath));
                             }
 
                             break;
                         case SignatureBodySourceComponents.QueryString:
-                            if (signingRequest.Uri != null)
+                            if (parameters.Uri != null)
                             {
-                                result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Uri.Query));
+                                result.AddRange(Encoding.UTF8.GetBytes(parameters.Uri.Query));
                             }
 
                             break;
                         case SignatureBodySourceComponents.Body:
-                            result.AddRange(signingRequest.Body ?? Array.Empty<byte>());
+                            result.AddRange(parameters.Body ?? Array.Empty<byte>());
                             break;
                         case SignatureBodySourceComponents.Timestamp:
-                            result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Timestamp.ToString(CultureInfo.InvariantCulture)));
+                            result.AddRange(Encoding.UTF8.GetBytes(parameters.Timestamp.ToString(CultureInfo.InvariantCulture)));
                             break;
                         case SignatureBodySourceComponents.Nonce:
-                            result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Nonce));
+                            result.AddRange(Encoding.UTF8.GetBytes(parameters.Nonce));
                             break;
                         default:
                             if (SignatureBodySourceComponents.IsHeader(component, out var headerName))
                             {
-                                if (signingRequest.Headers.ContainsKey(headerName))
+                                if (parameters.Headers.ContainsKey(headerName))
                                 {
-                                    result.AddRange(Encoding.UTF8.GetBytes(signingRequest.Headers[headerName]));
+                                    result.AddRange(Encoding.UTF8.GetBytes(parameters.Headers[headerName]));
                                 }
                             }
                             else

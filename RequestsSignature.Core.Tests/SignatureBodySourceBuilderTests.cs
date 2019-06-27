@@ -19,61 +19,56 @@ namespace RequestsSignature.Core.Tests
             var nonce = Guid.NewGuid().ToString();
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var clientId = "ClientId";
-            var key = "Key";
             var body = Encoding.UTF8.GetBytes("FOO");
 
             yield return new object[]
             {
-                new SigningBodyRequest(
+                new SignatureBodySourceParameters(
                     method,
                     uri,
                     headers,
                     nonce,
                     timestamp,
                     clientId,
-                    key,
                     new List<string>()),
                 Array.Empty<byte>(),
             };
 
             yield return new object[]
             {
-                new SigningBodyRequest(
+                new SignatureBodySourceParameters(
                     method,
                     uri,
                     headers,
                     nonce,
                     timestamp,
                     clientId,
-                    key,
                     new List<string> { SignatureBodySourceComponents.Nonce }),
                 Encoding.UTF8.GetBytes(nonce),
             };
 
             yield return new object[]
             {
-                new SigningBodyRequest(
+                new SignatureBodySourceParameters(
                     method,
                     uri,
                     headers,
                     nonce,
                     timestamp,
                     clientId,
-                    key,
                     new List<string> { SignatureBodySourceComponents.Nonce, SignatureBodySourceComponents.Timestamp }),
                 Encoding.UTF8.GetBytes(nonce).Concat(Encoding.UTF8.GetBytes(timestamp.ToString(CultureInfo.InvariantCulture))).ToArray(),
             };
 
             yield return new object[]
             {
-                new SigningBodyRequest(
+                new SignatureBodySourceParameters(
                     method,
                     uri,
                     headers,
                     nonce,
                     timestamp,
                     clientId,
-                    key,
                     new List<string> { SignatureBodySourceComponents.Method, SignatureBodySourceComponents.Scheme, SignatureBodySourceComponents.Host, SignatureBodySourceComponents.LocalPath, SignatureBodySourceComponents.QueryString }),
                 Encoding.UTF8.GetBytes("POST")
                     .Concat(Encoding.UTF8.GetBytes(uri.Scheme))
@@ -85,14 +80,13 @@ namespace RequestsSignature.Core.Tests
 
             yield return new object[]
             {
-                new SigningBodyRequest(
+                new SignatureBodySourceParameters(
                     method,
                     uri,
                     headers,
                     nonce,
                     timestamp,
                     clientId,
-                    key,
                     new List<string> { SignatureBodySourceComponents.Body },
                     body),
                 body,
@@ -100,14 +94,13 @@ namespace RequestsSignature.Core.Tests
 
             yield return new object[]
             {
-                new SigningBodyRequest(
+                new SignatureBodySourceParameters(
                     method,
                     uri,
                     headers,
                     nonce,
                     timestamp,
                     clientId,
-                    key,
                     new List<string> { SignatureBodySourceComponents.Header("Header1") }),
                 Encoding.UTF8.GetBytes("Value1"),
             };
@@ -115,10 +108,10 @@ namespace RequestsSignature.Core.Tests
 
         [Theory]
         [MemberData(nameof(ItShouldBuildSourceValueFromComponentsData))]
-        public async Task ItShouldBuildSourceValueFromComponents(SigningBodyRequest signingRequest, byte[] expected)
+        public async Task ItShouldBuildSourceValueFromComponents(SignatureBodySourceParameters parameters, byte[] expected)
         {
             var builder = new SignatureBodySourceBuilder();
-            var result = await builder.Build(signingRequest);
+            var result = await builder.Build(parameters);
             result.Should().BeEquivalentTo(expected);
         }
     }

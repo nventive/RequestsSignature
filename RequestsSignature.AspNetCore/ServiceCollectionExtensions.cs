@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddRequestsSignatureValidation(this IServiceCollection services)
         {
             services.TryAddSingleton<IRequestsSignatureValidationService, RequestsSignatureValidationService>();
-            services.TryAddSingleton<IRequestSigner, HashAlgorithmRequestSigner>();
+            services.TryAddSingleton<ISignatureBodySigner, HashAlgorithmSignatureBodySigner>();
             services.TryAddSingleton<ISignatureBodySourceBuilder, SignatureBodySourceBuilder>();
             return services;
         }

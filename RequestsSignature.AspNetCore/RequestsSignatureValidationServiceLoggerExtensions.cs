@@ -12,7 +12,8 @@ namespace RequestsSignature.AspNetCore
 ServerTimestamp: {ServerTimestamp}
 Signature: {SignatureValue}
 ClientId: {ClientId}
-ComputedSignature: {ComputedSignature}";
+ComputedSignature: {ComputedSignature}
+SignatureBodySource (Base64): {SignatureBodySource}";
 
         private static readonly Action<ILogger, SignatureValidationResultStatus, string, Exception> _signatureValidationSucceeded =
             LoggerMessage.Define<SignatureValidationResultStatus, string>(
@@ -26,8 +27,8 @@ ComputedSignature: {ComputedSignature}";
                 new EventId(501, "SignatureValidationIgnored"),
                 @"Signature validation ignored: {Status}");
 
-        private static readonly Action<ILogger, SignatureValidationResultStatus, long, string, string, string, Exception> _signatureValidationFailed =
-            LoggerMessage.Define<SignatureValidationResultStatus, long, string, string, string>(
+        private static readonly Action<ILogger, SignatureValidationResultStatus, long, string, string, string, string, Exception> _signatureValidationFailed =
+            LoggerMessage.Define<SignatureValidationResultStatus, long, string, string, string, string>(
                 LogLevel.Warning,
                 new EventId(510, "SignatureValidationFailed"),
                 SignatureValidationFailedMessageFormat);
@@ -76,6 +77,7 @@ ComputedSignature: {ComputedSignature}";
                 result?.SignatureValue,
                 result?.ClientId,
                 result?.ComputedSignature,
+                result?.SignatureBodySource == null ? null : Convert.ToBase64String(result.SignatureBodySource),
                 ex);
         }
     }

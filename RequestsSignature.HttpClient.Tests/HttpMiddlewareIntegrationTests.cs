@@ -92,21 +92,22 @@ namespace RequestsSignature.HttpClient.Tests
         public async Task ItShouldNotAllowSameNonceTwiceIfConfigured()
         {
             var client = new System.Net.Http.HttpClient();
-            var requestSigner = new HashAlgorithmRequestSigner(new SignatureBodySourceBuilder());
+            var signatureBodySourceBuilder = new SignatureBodySourceBuilder();
+            var signatureBodySigner = new HashAlgorithmSignatureBodySigner();
             var request = new HttpRequestMessage(HttpMethod.Get, new Uri(_fixture.ServerUri, ApiController.GetSignatureValidationResultGetUri));
             var nonce = Guid.NewGuid().ToString();
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-            var signatureBodyRequest = new SigningBodyRequest(
+            var signatureBodySourceParameters = new SignatureBodySourceParameters(
                 request.Method.ToString(),
                 request.RequestUri,
                 new Dictionary<string, string>(),
                 nonce,
                 timestamp,
                 StartupWithMiddleware.DefaultClientId,
-                StartupWithMiddleware.DefaultKey,
                 DefaultConstants.SignatureBodySourceComponents);
-            var signatureBody = await requestSigner.CreateSignatureBody(signatureBodyRequest);
+            var signatureBodySource = await signatureBodySourceBuilder.Build(signatureBodySourceParameters);
+            var signatureBody = await signatureBodySigner.Sign(new SignatureBodyParameters(signatureBodySource, StartupWithMiddleware.DefaultKey));
             var signature = $"{StartupWithMiddleware.DefaultClientId}:{nonce}:{timestamp}:{signatureBody}";
 
             request.Headers.TryAddWithoutValidation(DefaultConstants.HeaderName, signature);
@@ -121,16 +122,17 @@ namespace RequestsSignature.HttpClient.Tests
             timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
             request = new HttpRequestMessage(HttpMethod.Get, new Uri(_fixture.ServerUri, ApiController.GetSignatureValidationResultGetUri));
-            signatureBodyRequest = new SigningBodyRequest(
+            signatureBodySourceParameters = new SignatureBodySourceParameters(
                 request.Method.ToString(),
                 request.RequestUri,
                 new Dictionary<string, string>(),
                 nonce,
                 timestamp,
                 StartupWithMiddleware.DefaultClientId,
-                StartupWithMiddleware.DefaultKey,
                 DefaultConstants.SignatureBodySourceComponents);
-            signatureBody = await requestSigner.CreateSignatureBody(signatureBodyRequest);
+
+            signatureBodySource = await signatureBodySourceBuilder.Build(signatureBodySourceParameters);
+            signatureBody = await signatureBodySigner.Sign(new SignatureBodyParameters(signatureBodySource, StartupWithMiddleware.DefaultKey));
             signature = $"{StartupWithMiddleware.DefaultClientId}:{nonce}:{timestamp}:{signatureBody}";
             request.Headers.TryAddWithoutValidation(DefaultConstants.HeaderName, signature);
 

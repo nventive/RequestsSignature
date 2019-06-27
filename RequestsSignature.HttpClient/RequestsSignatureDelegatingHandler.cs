@@ -22,7 +22,8 @@ namespace RequestsSignature.HttpClient
         public const string TimestampClockProperty = "TimestampClock";
 
         private readonly RequestsSignatureOptions _options;
-        private readonly IRequestSigner _requestSigner;
+        private readonly ISignatureBodySourceBuilder _signatureBodySourceBuilder;
+        private readonly ISignatureBodySigner _signatureBodySigner;
 
         private long _clockSkew = 0;
 
@@ -31,17 +32,20 @@ namespace RequestsSignature.HttpClient
         /// with a specific inner handler.
         /// </summary>
         /// <param name="options">The signature options.</param>
-        /// <param name="requestSigner">The <see cref="IRequestSigner"/>.</param>
+        /// <param name="signatureBodySourceBuilder">The <see cref="ISignatureBodySourceBuilder"/>.</param>
+        /// <param name="signatureBodySigner">The <see cref="ISignatureBodySigner"/>.</param>
         /// <param name="innerHandler">The inner handler which is responsible for processing the HTTP response messages.</param>
         [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Not needed for HttpClient.")]
         public RequestsSignatureDelegatingHandler(
             RequestsSignatureOptions options,
-            IRequestSigner requestSigner = null,
+            ISignatureBodySourceBuilder signatureBodySourceBuilder = null,
+            ISignatureBodySigner signatureBodySigner = null,
             HttpMessageHandler innerHandler = null)
             : base(innerHandler ?? new HttpClientHandler())
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
-            _requestSigner = requestSigner ?? new HashAlgorithmRequestSigner(new SignatureBodySourceBuilder());
+            _signatureBodySourceBuilder = signatureBodySourceBuilder ?? new SignatureBodySourceBuilder();
+            _signatureBodySigner = signatureBodySigner ?? new HashAlgorithmSignatureBodySigner();
         }
 
         /// <inheritdoc />
@@ -94,23 +98,25 @@ namespace RequestsSignature.HttpClient
                 body = await request.Content.ReadAsByteArrayAsync();
             }
 
-            var signingRequest = new SigningBodyRequest(
+            var signatureBodySourceParameters = new SignatureBodySourceParameters(
                 request.Method.ToString(),
                 request.RequestUri,
                 request.Headers.ToDictionary(x => x.Key, x => x.Value.ToString()),
                 Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture),
                 GetTimestamp(request),
                 _options.ClientId,
-                _options.Key,
                 _options.SignatureBodySourceComponents,
                 body);
 
-            var signatureBody = await _requestSigner.CreateSignatureBody(signingRequest);
+            var signatureBodySource = await _signatureBodySourceBuilder.Build(signatureBodySourceParameters);
+
+            var signatureBodyParameters = new SignatureBodyParameters(signatureBodySource, _options.Key);
+            var signatureBody = await _signatureBodySigner.Sign(signatureBodyParameters);
 
             var signature = _options.SignaturePatternBuilder
                 .Replace("{ClientId}", _options.ClientId)
-                .Replace("{Nonce}", signingRequest.Nonce)
-                .Replace("{Timestamp}", signingRequest.Timestamp.ToString(CultureInfo.InvariantCulture))
+                .Replace("{Nonce}", signatureBodySourceParameters.Nonce)
+                .Replace("{Timestamp}", signatureBodySourceParameters.Timestamp.ToString(CultureInfo.InvariantCulture))
                 .Replace("{SignatureBody}", signatureBody);
 
             request.Headers.TryAddWithoutValidation(_options.HeaderName, signature);
