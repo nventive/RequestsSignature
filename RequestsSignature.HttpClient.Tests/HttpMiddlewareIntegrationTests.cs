@@ -165,6 +165,29 @@ namespace RequestsSignature.HttpClient.Tests
 
             var response = await client.GetAsync(ApiController.GetSignatureValidationResultWithAttributeUri);
 
+            response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        }
+
+        [Fact]
+        public async Task ItShouldRequireRequestsSignatureValidationWithFilterAndNoException()
+        {
+            var requestsSignatureOptions = new RequestsSignatureOptions
+            {
+                ClientId = StartupWithMiddleware.CustomClientId,
+                Key = StartupWithMiddleware.CustomKey,
+            };
+            foreach (var sourceComponent in StartupWithMiddleware.CustomSignatureBodySourceComponents)
+            {
+                requestsSignatureOptions.SignatureBodySourceComponents.Add(sourceComponent);
+            }
+
+            var client = new System.Net.Http.HttpClient(new RequestsSignatureDelegatingHandler(requestsSignatureOptions))
+            {
+                BaseAddress = _fixture.ServerUri,
+            };
+
+            var response = await client.GetAsync(ApiController.GetSignatureValidationResultWithAttributeNoExceptionUri);
+
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 

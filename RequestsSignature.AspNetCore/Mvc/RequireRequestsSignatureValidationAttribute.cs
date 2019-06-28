@@ -29,6 +29,14 @@ namespace RequestsSignature.AspNetCore.Mvc
         /// </summary>
         public IEnumerable<string> ClientIds { get; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to throw a <see cref="RequestsSignatureValidationException"/>
+        /// if validation failed.
+        /// If false, a 401 or 403 response will be returned instead.
+        /// Defaults to true.
+        /// </summary>
+        public bool ThrowsOnValidationError { get; set; } = true;
+
         /// <inheritdoc />
         public override void OnActionExecuting(ActionExecutingContext context)
         {
@@ -45,6 +53,11 @@ namespace RequestsSignature.AspNetCore.Mvc
             var validationResult = context.HttpContext.GetSignatureValidationResult();
             if (validationResult == null || !AcceptedStatus.Contains(validationResult.Status))
             {
+                if (ThrowsOnValidationError)
+                {
+                    throw new RequestsSignatureValidationException(validationResult);
+                }
+
                 context.Result = new UnauthorizedResult();
                 return;
             }
@@ -53,6 +66,11 @@ namespace RequestsSignature.AspNetCore.Mvc
             {
                 if (!ClientIds.Contains(validationResult.ClientId))
                 {
+                    if (ThrowsOnValidationError)
+                    {
+                        throw new RequestsSignatureValidationException(validationResult);
+                    }
+
                     context.Result = new StatusCodeResult(StatusCodes.Status403Forbidden);
                     return;
                 }
