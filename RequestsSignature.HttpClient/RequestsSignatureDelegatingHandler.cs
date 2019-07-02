@@ -114,7 +114,7 @@ namespace RequestsSignature.HttpClient
 
             var signatureBodySource = await _signatureBodySourceBuilder.Build(signatureBodySourceParameters);
 
-            var signatureBodyParameters = new SignatureBodyParameters(signatureBodySource, _options.Key);
+            var signatureBodyParameters = new SignatureBodyParameters(signatureBodySource, _options.ClientSecret);
             var signatureBody = await _signatureBodySigner.Sign(signatureBodyParameters);
 
             var signature = _options.SignaturePatternBuilder
@@ -138,9 +138,9 @@ namespace RequestsSignature.HttpClient
                 throw new RequestsSignatureException($"Missing {nameof(_options.ClientId)} in {nameof(RequestsSignatureDelegatingHandler)} options.");
             }
 
-            if (string.IsNullOrWhiteSpace(_options.Key))
+            if (string.IsNullOrWhiteSpace(_options.ClientSecret))
             {
-                throw new RequestsSignatureException($"Missing {nameof(_options.Key)} in {nameof(RequestsSignatureDelegatingHandler)} options.");
+                throw new RequestsSignatureException($"Missing {nameof(_options.ClientSecret)} in {nameof(RequestsSignatureDelegatingHandler)} options.");
             }
 
             if (string.IsNullOrWhiteSpace(_options.HeaderName))

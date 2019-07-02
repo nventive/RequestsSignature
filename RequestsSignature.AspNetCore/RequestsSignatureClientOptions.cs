@@ -13,9 +13,9 @@ namespace RequestsSignature.AspNetCore
         public string ClientId { get; set; }
 
         /// <summary>
-        /// Gets or sets the signature key.
+        /// Gets or sets the client secret.
         /// </summary>
-        public string Key { get; set; }
+        public string ClientSecret { get; set; }
 
         /// <summary>
         /// Gets the ordered list of signature body source components used to compute

@@ -29,7 +29,7 @@ namespace RequestsSignature.HttpClient.Tests
                     new RequestsSignatureOptions
                     {
                         ClientId = StartupWithMiddleware.DefaultClientId,
-                        Key = StartupWithMiddleware.DefaultKey,
+                        ClientSecret = StartupWithMiddleware.DefaultClientSecret,
                     }))
             {
                 BaseAddress = _fixture.ServerUri,
@@ -49,7 +49,7 @@ namespace RequestsSignature.HttpClient.Tests
             var requestsSignatureOptions = new RequestsSignatureOptions
             {
                 ClientId = StartupWithMiddleware.CustomClientId,
-                Key = StartupWithMiddleware.CustomKey,
+                ClientSecret = StartupWithMiddleware.CustomClientSecret,
             };
             foreach (var sourceComponent in StartupWithMiddleware.CustomSignatureBodySourceComponents)
             {
@@ -77,7 +77,7 @@ namespace RequestsSignature.HttpClient.Tests
                     new RequestsSignatureOptions
                     {
                         ClientId = StartupWithMiddleware.DefaultClientId,
-                        Key = StartupWithMiddleware.DefaultKey,
+                        ClientSecret = StartupWithMiddleware.DefaultClientSecret,
                     }))
             {
                 BaseAddress = _fixture.ServerUri,
@@ -110,7 +110,7 @@ namespace RequestsSignature.HttpClient.Tests
                 StartupWithMiddleware.DefaultClientId,
                 DefaultConstants.SignatureBodySourceComponents);
             var signatureBodySource = await signatureBodySourceBuilder.Build(signatureBodySourceParameters);
-            var signatureBody = await signatureBodySigner.Sign(new SignatureBodyParameters(signatureBodySource, StartupWithMiddleware.DefaultKey));
+            var signatureBody = await signatureBodySigner.Sign(new SignatureBodyParameters(signatureBodySource, StartupWithMiddleware.DefaultClientSecret));
             var signature = $"{StartupWithMiddleware.DefaultClientId}:{nonce}:{timestamp}:{signatureBody}";
 
             request.Headers.TryAddWithoutValidation(DefaultConstants.HeaderName, signature);
@@ -135,7 +135,7 @@ namespace RequestsSignature.HttpClient.Tests
                 DefaultConstants.SignatureBodySourceComponents);
 
             signatureBodySource = await signatureBodySourceBuilder.Build(signatureBodySourceParameters);
-            signatureBody = await signatureBodySigner.Sign(new SignatureBodyParameters(signatureBodySource, StartupWithMiddleware.DefaultKey));
+            signatureBody = await signatureBodySigner.Sign(new SignatureBodyParameters(signatureBodySource, StartupWithMiddleware.DefaultClientSecret));
             signature = $"{StartupWithMiddleware.DefaultClientId}:{nonce}:{timestamp}:{signatureBody}";
             request.Headers.TryAddWithoutValidation(DefaultConstants.HeaderName, signature);
 
@@ -151,7 +151,7 @@ namespace RequestsSignature.HttpClient.Tests
             var requestsSignatureOptions = new RequestsSignatureOptions
             {
                 ClientId = StartupWithMiddleware.CustomClientId,
-                Key = StartupWithMiddleware.CustomKey,
+                ClientSecret = StartupWithMiddleware.CustomClientSecret,
             };
             foreach (var sourceComponent in StartupWithMiddleware.CustomSignatureBodySourceComponents)
             {
@@ -174,7 +174,7 @@ namespace RequestsSignature.HttpClient.Tests
             var requestsSignatureOptions = new RequestsSignatureOptions
             {
                 ClientId = StartupWithMiddleware.CustomClientId,
-                Key = StartupWithMiddleware.CustomKey,
+                ClientSecret = StartupWithMiddleware.CustomClientSecret,
             };
             foreach (var sourceComponent in StartupWithMiddleware.CustomSignatureBodySourceComponents)
             {

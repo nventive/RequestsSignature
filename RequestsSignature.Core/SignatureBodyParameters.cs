@@ -11,13 +11,13 @@ namespace RequestsSignature.Core
         /// Initializes a new instance of the <see cref="SignatureBodyParameters"/> class.
         /// </summary>
         /// <param name="data">The data to sign.</param>
-        /// <param name="key">The key.</param>
+        /// <param name="clientSecret">The client secret.</param>
         public SignatureBodyParameters(
             byte[] data,
-            string key)
+            string clientSecret)
         {
             Data = data;
-            Key = key;
+            ClientSecret = clientSecret;
         }
 
         /// <summary>
@@ -27,8 +27,8 @@ namespace RequestsSignature.Core
         public byte[] Data { get; }
 
         /// <summary>
-        /// Gets the signature key.
+        /// Gets the client secret.
         /// </summary>
-        public string Key { get; }
+        public string ClientSecret { get; }
     }
 }

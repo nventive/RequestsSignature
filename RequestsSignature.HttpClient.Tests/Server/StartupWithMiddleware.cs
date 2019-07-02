@@ -12,10 +12,10 @@ namespace RequestsSignature.HttpClient.Tests.Server
     public class StartupWithMiddleware
     {
         public const string DefaultClientId = "0ebb2f21169b4c82b1915f0559212a3a";
-        public const string DefaultKey = "4b2a708910f74275a4ba46aeb3af346b";
+        public const string DefaultClientSecret = "4b2a708910f74275a4ba46aeb3af346b";
 
         public const string CustomClientId = "a91946e5329e40678becbdc7b86564ed";
-        public const string CustomKey = "020ee7d9657e4d389e21d05bdd619e52";
+        public const string CustomClientSecret = "020ee7d9657e4d389e21d05bdd619e52";
 
         public static readonly IList<string> CustomSignatureBodySourceComponents = new List<string>
             { SignatureBodySourceComponents.LocalPath, SignatureBodySourceComponents.Timestamp };
@@ -28,12 +28,12 @@ namespace RequestsSignature.HttpClient.Tests.Server
                 options.Clients.Add(new RequestsSignatureClientOptions
                 {
                     ClientId = DefaultClientId,
-                    Key = DefaultKey,
+                    ClientSecret = DefaultClientSecret,
                 });
                 var customClient = new RequestsSignatureClientOptions
                 {
                     ClientId = CustomClientId,
-                    Key = CustomKey,
+                    ClientSecret = CustomClientSecret,
                 };
                 foreach (var componentSource in CustomSignatureBodySourceComponents)
                 {

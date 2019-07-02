@@ -16,7 +16,7 @@ namespace RequestsSignature.AspNetCore.Tests
     public class RequestsSignatureValidationServiceTests
     {
         private const string ClientId = "ClientId";
-        private const string ClientKey = "ClientKey";
+        private const string ClientSecret = "ClientSecret";
 
         [Fact]
         public async Task ItShouldHonorDisabledOptions()
@@ -208,7 +208,7 @@ namespace RequestsSignature.AspNetCore.Tests
                 options.Clients.Add(new RequestsSignatureClientOptions
                 {
                     ClientId = ClientId,
-                    Key = ClientKey,
+                    ClientSecret = ClientSecret,
                 });
             }));
             var optionsFactory = new OptionsFactory<RequestsSignatureOptions>(new[] { configureOptions }, Enumerable.Empty<IPostConfigureOptions<RequestsSignatureOptions>>());

@@ -15,9 +15,9 @@ namespace RequestsSignature.HttpClient
         public string ClientId { get; set; }
 
         /// <summary>
-        /// Gets or sets the key signature.
+        /// Gets or sets the client secret.
         /// </summary>
-        public string Key { get; set; }
+        public string ClientSecret { get; set; }
 
         /// <summary>
         /// Gets or sets the header name.

@@ -27,7 +27,7 @@ namespace RequestsSignature.HttpClient.Tests
                     new RequestsSignatureOptions
                     {
                         ClientId = StartupWithMiddleware.DefaultClientId,
-                        Key = StartupWithMiddleware.DefaultKey,
+                        ClientSecret = StartupWithMiddleware.DefaultClientSecret,
                     }))
             {
                 BaseAddress = _fixture.ServerUri,
@@ -48,7 +48,7 @@ namespace RequestsSignature.HttpClient.Tests
             var requestsSignatureOptions = new RequestsSignatureOptions
             {
                 ClientId = StartupWithMiddleware.CustomClientId,
-                Key = StartupWithMiddleware.CustomKey,
+                ClientSecret = StartupWithMiddleware.CustomClientSecret,
             };
             foreach (var sourceComponent in StartupWithMiddleware.CustomSignatureBodySourceComponents)
             {
@@ -77,7 +77,7 @@ namespace RequestsSignature.HttpClient.Tests
                     new RequestsSignatureOptions
                     {
                         ClientId = StartupWithMiddleware.CustomClientId,
-                        Key = "wrongkey",
+                        ClientSecret = "wrongkey",
                     }))
             {
                 BaseAddress = _fixture.ServerUri,
@@ -95,7 +95,7 @@ namespace RequestsSignature.HttpClient.Tests
                     new RequestsSignatureOptions
                     {
                         ClientId = StartupWithMiddleware.DefaultClientId,
-                        Key = StartupWithMiddleware.DefaultKey,
+                        ClientSecret = StartupWithMiddleware.DefaultClientSecret,
                     }))
             {
                 BaseAddress = _fixture.ServerUri,

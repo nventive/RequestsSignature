@@ -11,7 +11,7 @@ namespace RequestsSignature.Core
     public class HashAlgorithmSignatureBodySigner : ISignatureBodySigner
     {
         private static readonly Func<SignatureBodyParameters, HashAlgorithm> DefaultHashAlgorithmBuilder =
-            parameters => new HMACSHA256(Encoding.UTF8.GetBytes(parameters.Key));
+            parameters => new HMACSHA256(Encoding.UTF8.GetBytes(parameters.ClientSecret));
 
         private readonly Func<SignatureBodyParameters, HashAlgorithm> _hashAlgorithmBuilder;
 

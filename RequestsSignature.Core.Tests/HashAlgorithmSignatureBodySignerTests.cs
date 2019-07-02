@@ -10,7 +10,7 @@ namespace RequestsSignature.Core.Tests
         [Fact]
         public async Task ItShouldSign()
         {
-            var parameters = new SignatureBodyParameters(Array.Empty<byte>(), "key");
+            var parameters = new SignatureBodyParameters(Array.Empty<byte>(), "clientSecret");
             var signer = new HashAlgorithmSignatureBodySigner();
 
             var result = await signer.Sign(parameters);

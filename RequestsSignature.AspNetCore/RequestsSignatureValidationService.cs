@@ -171,7 +171,7 @@ namespace RequestsSignature.AspNetCore
 
             var signatureBodySource = await _signatureBodySourceBuilder.Build(signatureBodySourceParameters);
 
-            var signatureBodyParameters = new SignatureBodyParameters(signatureBodySource, clientOptions.Key);
+            var signatureBodyParameters = new SignatureBodyParameters(signatureBodySource, clientOptions.ClientSecret);
             var signature = await _signatureBodySigner.Sign(signatureBodyParameters);
 
             if (!string.Equals(signature, signatureComponents.SignatureBody, StringComparison.Ordinal))
@@ -229,9 +229,9 @@ namespace RequestsSignature.AspNetCore
                     throw new RequestsSignatureException($"Property {nameof(clientOptions.ClientId)} is null or empty for a client.");
                 }
 
-                if (string.IsNullOrEmpty(clientOptions.Key))
+                if (string.IsNullOrEmpty(clientOptions.ClientSecret))
                 {
-                    throw new RequestsSignatureException($"Property {nameof(clientOptions.Key)} is null or empty for client {clientOptions.ClientId}.");
+                    throw new RequestsSignatureException($"Property {nameof(clientOptions.ClientSecret)} is null or empty for client {clientOptions.ClientId}.");
                 }
             }
         }

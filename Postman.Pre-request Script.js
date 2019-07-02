@@ -5,9 +5,9 @@ const signatureClientId = pm.variables.get("signatureClientId") || pm.environmen
 if (!signatureClientId) {
   throw new Error("Missing signatureClientId variable to configure the client id for request signature.");
 }
-const signatureKey = pm.variables.get("signatureKey") || pm.environment.get("signatureKey");
-if (!signatureKey) {
-  throw new Error("Missing signatureKey variable to configure the key for request signature.");
+const signatureClientSecret = pm.variables.get("signatureClientSecret") || pm.environment.get("signatureClientSecret");
+if (!signatureClientSecret) {
+  throw new Error("Missing signatureClientSecret variable to configure the secret for request signature.");
 }
 
 const signatureHeaderName = pm.variables.get("signatureHeaderName") || pm.environment.get("signatureHeaderName") || "X-RequestSignature";
@@ -94,7 +94,7 @@ signatureBodySourceComponents.forEach(component => {
   }
 });
 
-const signatureBody = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(byteArrayToWordArray(signatureBodySource), signatureKey));
+const signatureBody = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(byteArrayToWordArray(signatureBodySource), signatureClientSecret));
 
 const signature = signaturePattern
   .replace("{ClientId}", signatureClientId)

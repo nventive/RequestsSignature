@@ -37,13 +37,13 @@ public class Startup
         // Configure the RequestTracingMiddlewareOptions. This is one way of doing it.
         services.Configure<RequestsSignatureOptions>(options =>
         {
-            // List of client ids and keys that are accepted and validated.
+            // List of client ids and secrets that are accepted and validated.
             options.Clients = new[]
             {
                 new RequestsSignatureClientOptions
                 {
                     ClientId = "9e616f36fde8424e9f71afa4a31e128a",
-                    Key = "df46ca91155142e99617a5fc5dea1f50",
+                    ClientSecret = "df46ca91155142e99617a5fc5dea1f50",
                 },
             };
         });
@@ -167,13 +167,13 @@ public class Startup
         // Configure the RequestTracingMiddlewareOptions. This is one way of doing it.
         services.Configure<RequestsSignatureOptions>(options =>
         {
-            // List of client ids and keys that are accepted and validated.
+            // List of client ids and secrets that are accepted and validated.
             options.Clients = new[]
             {
                 new RequestsSignatureClientOptions
                 {
                     ClientId = "9e616f36fde8424e9f71afa4a31e128a",
-                    Key = "df46ca91155142e99617a5fc5dea1f50",
+                    ClientSecret = "df46ca91155142e99617a5fc5dea1f50",
                 },
             };
         });
@@ -215,7 +215,7 @@ var client = new System.Net.Http.HttpClient(
         {
             // These options must be the same as the server-side client options.
             ClientId = "9e616f36fde8424e9f71afa4a31e128a",
-            Key = "df46ca91155142e99617a5fc5dea1f50",
+            ClientSecret = "df46ca91155142e99617a5fc5dea1f50",
         }));
 
 // Use the client normally
