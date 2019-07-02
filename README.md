@@ -222,7 +222,17 @@ var client = new System.Net.Http.HttpClient(
 var response = await client.GetAsync("...");
 ```
 
-### Testing with Postman
+### Testing with [Postman](https://www.getpostman.com/)
+
+The repository includes a [Postman Pre-request script](https://learning.getpostman.com/docs/postman/scripts/pre_request_scripts/) that can be used
+to sign the requests when using [Postman](https://www.getpostman.com/).
+
+Simply copy the content of the [`Postman.Pre-request Script.js`](Postman.Pre-request%20Script.js) file and configure the following [variables](https://learning.getpostman.com/docs/postman/environments_and_globals/variables/):
+
+- `signatureClientId`
+- `signatureClientSecret`
+
+The outgoing requests will then be properly signed.
 
 ## Features
 
