@@ -195,6 +195,35 @@ public class Startup
 
 ```
 
+### Implementing Requests Signature in HTTP Client
+
+To implement the creation of signed requests client-side (using `HttpClient`):
+
+Install the package:
+
+```
+Install-Package RequestsSignature.HttpClient
+```
+
+Configure the `RequestsSignatureDelegatingHandler` with the `HttpClient` instance:
+
+```csharp
+// Create the client with the RequestsSignatureDelegatingHandler
+var client = new System.Net.Http.HttpClient(
+    new RequestsSignature.HttpClient.RequestsSignatureDelegatingHandler(
+        new RequestsSignatureOptions
+        {
+            // These options must be the same as the server-side client options.
+            ClientId = "9e616f36fde8424e9f71afa4a31e128a",
+            Key = "df46ca91155142e99617a5fc5dea1f50",
+        }));
+
+// Use the client normally
+var response = await client.GetAsync("...");
+```
+
+### Testing with Postman
+
 ## Features
 
 {More details/listing of features of the project}
