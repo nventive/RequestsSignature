@@ -236,7 +236,74 @@ The outgoing requests will then be properly signed.
 
 ## Features
 
-{More details/listing of features of the project}
+### Default Header signature and algorithm
+
+By default, here is how the header is constructed:
+
+The final header has the following specification: `{ClientId}:{Nonce}:{Timestamp}:{SignatureBody}` where:
+- `{ClientId}`: is the client id as specified by the configuration
+- `{Nonce}`: is a random value unique to each request (a UUID/GUID is perfectly suitable)
+- `{Timestamp}`: is the current time when the request is sent, in Unix Epoch time (in seconds)
+- `{SignatureBody}`: Is the Base-64 encoded value of the HMAC SHA256 Signature of the signature components
+
+Signature components (the source for the SignatureBody HMAC value) is a binary value composed of the following values sequentially:
+- Nonce: UTF-8 encoded binary values of the Nonce
+- Timestamp: UTF-8 encoded binary values of the Timestamp (as a string value)
+- Request method: UTF-8 encoded binary values of the **uppercase** Request method
+- Request scheme: UTF-8 encoded binary values of the Request Uri scheme (e.g. `https`)
+- Request host: UTF-8 encoded binary values of the Request Uri host (e.g. `example.org`)
+- Request local path: UTF-8 encoded binary values of the Request Uri local path (e.g. `/api/v1/users`)
+- Request query string: UTF-8 encoded binary values of the Request Query string, including the leading `?` (e.g. `?q=search`)
+- Request body: Raw bytes of the request body
+
+*For more information see the [`SignatureBodySourceBuilder`](RequestsSignature.Core/SignatureBodySourceBuilder.cs) class or the [`Postman.Pre-request Script.js`](Postman.Pre-request%20Script.js) file.*
+
+Both the header format and the signature components can be customized using the following configuration parameters:
+- `SignaturePatternBuilder`: for the creation of the complete header
+- `SignaturePatternParser`: for the parsing of the complete header (must match with the `SignaturePatternBuilder`)
+- `SignatureBodySourceComponents`: for the components that are included in the final signature body
+
+For example, to only include the Nonce, Timestamp, Host and a custom header (`X-ClientId`) for the signature body, this is how it should be configured:
+
+```csharp
+clientOptions.SignatureBodySourceComponents.Add(SignatureBodySourceComponents.Nonce);
+clientOptions.SignatureBodySourceComponents.Add(SignatureBodySourceComponents.Timestamp);
+clientOptions.SignatureBodySourceComponents.Add(SignatureBodySourceComponents.Host);
+clientOptions.SignatureBodySourceComponents.Add(SignatureBodySourceComponents.Header("X-ClientId"));
+```
+
+**It is important to properly synchronize the settings between the server and all the clients, otherwise the signature will be improperly computed.**
+
+### Nonce repository
+
+TODO
+
+### Auto retry on clock skew detection (client)
+
+The `RequestsSignatureDelegatingHandler` has a specific features that tries to detect
+when a client's clock is not properly synchronized with the server and compensate
+for the delta. This is useful when dealing with clients that are not under your control.
+
+The way this work is when the client receives either a 401 or 403 status code and the 
+response includes a Date header, it compares the date received from the server and the
+client current time. If the difference is more than the configured `ClockSkew`, it
+computes the delta, adjust the time based on the computation and automatically re-tries
+the request. All subsequent invocation will also apply the same time delta, until another 
+potential clock skew is detected.
+
+This behavior can be de-activated using the `DisableAutoRetryOnClockSkew` client option.
+
+### Configure the client-side
+
+TODO
+
+### Configure the server-side
+
+TODO
+
+### Configure the Postman script
+
+TODO
 
 ## Changelog
 
