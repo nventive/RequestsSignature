@@ -40,7 +40,7 @@ namespace RequestsSignature.AspNetCore.Nonces
 
         /// <inheritdoc />
         public async Task Add(string nonce)
-            => _cache.Set(_keyPrefix + nonce, string.Empty, _options.ClockSkew);
+            => _cache.Set(_keyPrefix + nonce, string.Empty, _options.ClockSkew.Add(_options.ClockSkew));
 
         /// <inheritdoc />
         public async Task<bool> Exists(string nonce)

@@ -47,7 +47,7 @@ namespace RequestsSignature.AspNetCore.Nonces
             => _cache.SetAsync(
                 nonce,
                 CacheValue,
-                new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = _options.ClockSkew });
+                new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = _options.ClockSkew.Add(_options.ClockSkew) });
 
         /// <inheritdoc />
         public async Task<bool> Exists(string nonce)
