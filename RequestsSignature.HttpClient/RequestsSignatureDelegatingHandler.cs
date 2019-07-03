@@ -117,7 +117,7 @@ namespace RequestsSignature.HttpClient
             var signatureBodyParameters = new SignatureBodyParameters(signatureBodySource, _options.ClientSecret);
             var signatureBody = await _signatureBodySigner.Sign(signatureBodyParameters);
 
-            var signature = _options.SignaturePatternBuilder
+            var signature = _options.SignaturePattern
                 .Replace("{ClientId}", _options.ClientId)
                 .Replace("{Nonce}", signatureBodySourceParameters.Nonce)
                 .Replace("{Timestamp}", signatureBodySourceParameters.Timestamp.ToString(CultureInfo.InvariantCulture))
@@ -148,9 +148,9 @@ namespace RequestsSignature.HttpClient
                 throw new RequestsSignatureException($"Missing {nameof(_options.HeaderName)} in {nameof(RequestsSignatureDelegatingHandler)} options.");
             }
 
-            if (string.IsNullOrWhiteSpace(_options.SignaturePatternBuilder))
+            if (string.IsNullOrWhiteSpace(_options.SignaturePattern))
             {
-                throw new RequestsSignatureException($"Missing {nameof(_options.SignaturePatternBuilder)} in {nameof(RequestsSignatureDelegatingHandler)} options.");
+                throw new RequestsSignatureException($"Missing {nameof(_options.SignaturePattern)} in {nameof(RequestsSignatureDelegatingHandler)} options.");
             }
         }
     }

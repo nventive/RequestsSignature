@@ -258,10 +258,7 @@ Signature components (the source for the SignatureBody HMAC value) is a binary v
 
 *For more information see the [`SignatureBodySourceBuilder`](RequestsSignature.Core/SignatureBodySourceBuilder.cs) class or the [`Postman.Pre-request Script.js`](Postman.Pre-request%20Script.js) file.*
 
-Both the header format and the signature components can be customized using the following configuration parameters:
-- `SignaturePatternBuilder`: for the creation of the complete header
-- `SignaturePatternParser`: for the parsing of the complete header (must match with the `SignaturePatternBuilder`)
-- `SignatureBodySourceComponents`: for the components that are included in the final signature body
+*See the Configuration section on how to customize the signature.*
 
 ### Nonce repository
 
@@ -327,8 +324,8 @@ The following parameters can be configured client-side:
 - `ClockSkew`: The duration of time that a timestamp will still be considered valid when
   comparing with the current time (+/-). Defaults to 5 minutes.
 - `HeaderName`: The name of the header that contains the signature. Defaults to `X-RequestSignature`.
-- `SignaturePattern`: The `Regex` used to extract the signature values.
-  Defaults to the equivalent of `{ClientId}:{Nonce}:{Timestamp}:{SignatureBody}`
+- `SignaturePattern`: The pattern that is used to create the final header value.
+  Defaults to `{ClientId}:{Nonce}:{Timestamp}:{SignatureBody}`.
 - `Disabled`: When set to true, disable the signature validation. Useful when running
   tests or local development environment.
 - `SignatureBodySourceComponents`: The list of requests components that is used for signature validation. For example, to only include the Nonce, Timestamp, Host and a custom header (`X-ClientId`) for the signature body, this is how it should be configured:
@@ -362,7 +359,43 @@ The following variables can be used to configure the Postman Pre-request script:
 - `signatureBodySourceComponents`: The requests components used to compute the signature;
   If customized, must be a JSON array of `SignatureBodySourceComponents` string values
 
+### Further customization
+
+It is possible to further customize the behavior of the component by providing 
+custom implementation of the following interfaces:
+
+- `ISignatureBodySourceBuilder`: Builds the source data for the signature computation
+- `ISignatureBodySigner`: Creates the signature body value (from the signature body source)
+- `IRequestsSignatureValidationService`: Performs the signature validation
+
 ### Diagnose problems
+
+The `RequestsSignatureValidationService` provides extensive logging capabilities
+to try to diagnose signature errors.
+
+Enable the logging (with a minimum log level of `Warning`) to see diagnostic information:
+
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "RequestsSignature": "Warning"
+    }
+  }
+}
+```
+
+Here is the list of events that are logged:
+
+| Event Id | Event Name                   | Description                                               |
+|----------|------------------------------|-----------------------------------------------------------|
+| 500      | SignatureValidationSucceeded | When a signature is successfully validated                |
+| 501      | SignatureValidationIgnored   | When signature validation is disabled (via configuration) |
+| 510      | SignatureValidationFailed    | When signature validation fails                           |
+
+The logged properties and the `SignatureValidationResult` provides a detailed
+account as to what exactly failed the validation step, including intermediary
+signature body source and expected signature value.
 
 ## Changelog
 
@@ -380,7 +413,3 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on the process for
 contributing to this project.
 
 Be mindful of our [Code of Conduct](CODE_OF_CONDUCT.md).
-
-## Acknowledgments
-
-{List similar projects, inspirations, etc. related to this project.}

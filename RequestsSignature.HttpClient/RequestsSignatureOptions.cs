@@ -27,7 +27,7 @@ namespace RequestsSignature.HttpClient
         /// <summary>
         /// Gets or sets the header signature pattern.
         /// </summary>
-        public string SignaturePatternBuilder { get; set; } = DefaultConstants.SignaturePatternBuilder;
+        public string SignaturePattern { get; set; } = DefaultConstants.SignaturePattern;
 
         /// <summary>
         /// Gets or sets the allowed lag of time in either direction (past/future)

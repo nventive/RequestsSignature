@@ -39,9 +39,9 @@ namespace RequestsSignature.AspNetCore
         public string HeaderName { get; set; } = DefaultConstants.HeaderName;
 
         /// <summary>
-        /// Gets or sets the overral <see cref="Regex"/> pattern for the signature.
-        /// Defaults to <see cref="DefaultConstants.SignaturePatternParser"/> ({ClientId}:{Nonce}:{Timestamp}:{SignatureBody}).
+        /// Gets or sets the header signature pattern,
+        /// Defaults to <see cref="DefaultConstants.SignaturePattern"/> ({ClientId}:{Nonce}:{Timestamp}:{SignatureBody}).
         /// </summary>
-        public Regex SignaturePattern { get; set; } = DefaultConstants.SignaturePatternParser;
+        public string SignaturePattern { get; set; } = DefaultConstants.SignaturePattern;
     }
 }

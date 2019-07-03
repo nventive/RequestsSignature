@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -29,6 +30,7 @@ namespace RequestsSignature.AspNetCore
 
         private readonly RecyclableMemoryStreamManager _memoryStreamManager = new RecyclableMemoryStreamManager();
         private RequestsSignatureOptions _options;
+        private Regex _signaturePatternParser;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RequestsSignatureValidationService"/> class.
@@ -88,7 +90,7 @@ namespace RequestsSignature.AspNetCore
             }
 
             var signatureValue = headerValue.ToString().Trim();
-            var headerMatch = _options.SignaturePattern.Match(signatureValue);
+            var headerMatch = _signaturePatternParser.Match(signatureValue);
             if (!headerMatch.Success)
             {
                 result = new SignatureValidationResult(
@@ -212,9 +214,9 @@ namespace RequestsSignature.AspNetCore
                 throw new RequestsSignatureException($"Property {nameof(_options.HeaderName)} is null or empty.");
             }
 
-            if (_options.SignaturePattern == null)
+            if (string.IsNullOrWhiteSpace(_options.SignaturePattern))
             {
-                throw new RequestsSignatureException($"Property {nameof(_options.SignaturePattern)} is null.");
+                throw new RequestsSignatureException($"Property {nameof(_options.SignaturePattern)} is null or empty.");
             }
 
             if (!_options.Clients.Any())
@@ -233,6 +235,20 @@ namespace RequestsSignature.AspNetCore
                 {
                     throw new RequestsSignatureException($"Property {nameof(clientOptions.ClientSecret)} is null or empty for client {clientOptions.ClientId}.");
                 }
+            }
+
+            try
+            {
+                var signaturePatternParserRegExpression = Regex.Escape(_options.SignaturePattern)
+                    .Replace("\\{ClientId}", @"(?<ClientId>[^:]{1,64})")
+                    .Replace("\\{Nonce}", @"(?<Nonce>[^:]{1,64})")
+                    .Replace("\\{Timestamp}", @"(?<Timestamp>[\d]{1,12})")
+                    .Replace("\\{SignatureBody}", @"(?<SignatureBody>[^:]+)");
+                _signaturePatternParser = new Regex($"^{signaturePatternParserRegExpression}$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+            }
+            catch (ArgumentException regexArgException)
+            {
+                throw new RequestsSignatureException($"Invalid {nameof(_options.SignaturePattern)} value ({regexArgException.Message}).", regexArgException);
             }
         }
 
