@@ -8,6 +8,8 @@ It consists of .NET Standard 2.0 assemblies to help implement:
 - HMAC Signature Validation in a ASP.NET Core project (server-side)
 - a HTTP Client Delegating Handler that signs requests (client-side)
 
+Additionally, it provides a [Postman](https://www.getpostman.com/) Pre-request script to help testing APIs with signature validation.
+
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 ## Getting Started
@@ -367,6 +369,31 @@ custom implementation of the following interfaces:
 - `ISignatureBodySourceBuilder`: Builds the source data for the signature computation
 - `ISignatureBodySigner`: Creates the signature body value (from the signature body source)
 - `IRequestsSignatureValidationService`: Performs the signature validation
+
+Additionally, the Hash algorithm used can be customized by constructing the 
+`HashAlgorithmSignatureBodySigner` using a custom `hashAlgorithmBuilder`:
+
+```csharp
+using System.Security.Cryptography;
+using System.Text;
+using RequestsSignature.AspNetCore;
+using RequestsSignature.Core;
+
+public class Startup
+{
+    // This method gets called by the runtime. Use this method to add services to the container.
+    // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+    public void ConfigureServices(IServiceCollection services)
+    {
+        // ...
+        services
+            .AddSingleton<ISignatureBodySigner>(
+                sp => new HashAlgorithmSignatureBodySigner(
+                    parameters => new HMACSHA512(Encoding.UTF8.GetBytes(parameters.ClientSecret))))
+            .AddRequestsSignatureValidation();
+    }
+}
+```
 
 ### Diagnose problems
 
