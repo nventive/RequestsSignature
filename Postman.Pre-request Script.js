@@ -34,6 +34,10 @@ const byteArrayToWordArray = (byteArray) => {
   return CryptoJS.lib.WordArray.create(wordArray, byteArray.length);
 };
 
+if (resolvedRequest.header && resolvedRequest.header.find(x => x.key === signatureHeaderName)) {
+  return;
+}
+
 // Signature body computation
 let signatureBodySource = [];
 

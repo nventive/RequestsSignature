@@ -263,20 +263,43 @@ Both the header format and the signature components can be customized using the 
 - `SignaturePatternParser`: for the parsing of the complete header (must match with the `SignaturePatternBuilder`)
 - `SignatureBodySourceComponents`: for the components that are included in the final signature body
 
-For example, to only include the Nonce, Timestamp, Host and a custom header (`X-ClientId`) for the signature body, this is how it should be configured:
-
-```csharp
-clientOptions.SignatureBodySourceComponents.Add(SignatureBodySourceComponents.Nonce);
-clientOptions.SignatureBodySourceComponents.Add(SignatureBodySourceComponents.Timestamp);
-clientOptions.SignatureBodySourceComponents.Add(SignatureBodySourceComponents.Host);
-clientOptions.SignatureBodySourceComponents.Add(SignatureBodySourceComponents.Header("X-ClientId"));
-```
-
-**It is important to properly synchronize the settings between the server and all the clients, otherwise the signature will be improperly computed.**
-
 ### Nonce repository
 
-TODO
+By default, nonce are not stored and checked, which means that you are vulnerable to
+replay attacks for the duration of the clock skew.
+
+To enable nonce check, you must configure a `INonceRepository` that is responsible
+for storing and checking the nonce at least for the duration of twice the clock skew.
+
+Two implementations are provided: one that relies on the [`IMemoryCache`](https://docs.microsoft.com/en-us/aspnet/core/performance/caching/memory?view=aspnetcore-2.2), and another that relies on the [`IDistributedCache`](https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed?view=aspnetcore-2.2). Consider using one of these
+(or your own implementation) to enable nonce management.
+
+```csharp
+using RequestsSignature.AspNetCore;
+using RequestsSignature.AspNetCore.Nonces;
+
+public class Startup
+{
+    // This method gets called by the runtime. Use this method to add services to the container.
+    // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+    public void ConfigureServices(IServiceCollection services)
+    {
+        // ...
+
+        // Enable nonce repository using the Memory Cache
+        services
+            .AddMemoryCache()
+            .AddSingleton<INonceRepository, MemoryCacheNonceRepository>()
+            .AddRequestsSignatureValidation();
+
+        // Or using the distributed cache
+        services
+            .AddDistributedMemoryCache()
+            .AddSingleton<INonceRepository, DistributedCacheNonceRepository>()
+            .AddRequestsSignatureValidation();
+    }
+}
+```
 
 ### Auto retry on clock skew detection (client)
 
@@ -293,17 +316,53 @@ potential clock skew is detected.
 
 This behavior can be de-activated using the `DisableAutoRetryOnClockSkew` client option.
 
-### Configure the client-side
+### Configuration options
 
-TODO
+**It is important to properly synchronize the settings between the server and all the clients, otherwise the signature will be improperly computed and compared.**
 
-### Configure the server-side
+#### Server-side
 
-TODO
+The following parameters can be configured client-side:
 
-### Configure the Postman script
+- `ClockSkew`: The duration of time that a timestamp will still be considered valid when
+  comparing with the current time (+/-). Defaults to 5 minutes.
+- `HeaderName`: The name of the header that contains the signature. Defaults to `X-RequestSignature`.
+- `SignaturePattern`: The `Regex` used to extract the signature values.
+  Defaults to the equivalent of `{ClientId}:{Nonce}:{Timestamp}:{SignatureBody}`
+- `Disabled`: When set to true, disable the signature validation. Useful when running
+  tests or local development environment.
+- `SignatureBodySourceComponents`: The list of requests components that is used for signature validation. For example, to only include the Nonce, Timestamp, Host and a custom header (`X-ClientId`) for the signature body, this is how it should be configured:
 
-TODO
+```csharp
+clientOptions.SignatureBodySourceComponents.Add(SignatureBodySourceComponents.Nonce);
+clientOptions.SignatureBodySourceComponents.Add(SignatureBodySourceComponents.Timestamp);
+clientOptions.SignatureBodySourceComponents.Add(SignatureBodySourceComponents.Host);
+clientOptions.SignatureBodySourceComponents.Add(SignatureBodySourceComponents.Header("X-ClientId"));
+```
+
+#### Client-side
+
+- `ClockSkew`: The duration of time that a timestamp will still be considered valid when
+  comparing with the current time (+/-). Defaults to 5 minutes.
+- `HeaderName`: The name of the header that contains the signature. Defaults to `X-RequestSignature`.
+- `SignaturePattern`: The pattern that is used to create the final header value.
+  Defaults to `{ClientId}:{Nonce}:{Timestamp}:{SignatureBody}`.
+- `DisableAutoRetryOnClockSkew`: When set to true, the handler will not attempt to 
+  detect clock skew and auto-retry.
+
+#### Postman script
+
+The following variables can be used to configure the Postman Pre-request script:
+
+- `signatureClientId`: The client id
+- `signatureClientSecret`: The client secret
+- `signatureHeaderName`: The name of the header that contains the signature. Defaults to `X-RequestSignature`.
+- `signaturePattern`: The pattern that is used to create the final header value.
+  Defaults to `{ClientId}:{Nonce}:{Timestamp}:{SignatureBody}`.
+- `signatureBodySourceComponents`: The requests components used to compute the signature;
+  If customized, must be a JSON array of `SignatureBodySourceComponents` string values
+
+### Diagnose problems
 
 ## Changelog
 
