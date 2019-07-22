@@ -11,6 +11,9 @@
     <WarningsAsErrors />
     <NoWarn>1701;1702;1998</NoWarn>
     <TemplateVersion>0.1.0-beta0014</TemplateVersion>
+    <PackageIconUrl>https://nventive-email-assets.s3.amazonaws.com/packages/nv-package-logo%400%2C25x.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/nventive/RequestsSignature</PackageProjectUrl>
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
