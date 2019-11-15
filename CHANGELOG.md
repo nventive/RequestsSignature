@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## 2.0.0
+
+### Added
+
 - Added support for ASP.NET Core 3.0 (targeting `netcoreapp3.0`).
 
 ### Changed
