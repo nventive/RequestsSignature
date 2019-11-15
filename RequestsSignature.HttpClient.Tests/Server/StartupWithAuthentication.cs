@@ -64,6 +64,7 @@ namespace RequestsSignature.HttpClient.Tests.Server
 #endif
 #if NETCOREAPP3_0
             app.UseRouting();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
 #endif
         }
