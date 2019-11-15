@@ -43,7 +43,13 @@ namespace RequestsSignature.HttpClient.Tests.Server
                 options.Clients.Add(customClient);
             });
             services.AddRequestsSignatureValidation();
+#if NETCOREAPP2_2
             services.AddMvc();
+#endif
+
+#if NETCOREAPP3_0
+            services.AddControllers();
+#endif
 
             services
                 .AddAuthentication(RequestsSignatureAuthenticationConstants.AuthenticationScheme)
@@ -53,7 +59,14 @@ namespace RequestsSignature.HttpClient.Tests.Server
         public void Configure(IApplicationBuilder app)
         {
             app.UseAuthentication();
+#if NETCOREAPP2_2
             app.UseMvc();
+#endif
+#if NETCOREAPP3_0
+            app.UseRouting();
+            app.UseAuthorization();
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
+#endif
         }
     }
 }

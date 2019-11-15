@@ -86,7 +86,7 @@ public class Startup
         // Make sure this is sufficiently early in the request pipeline.
         app.UseRequestsSignatureValidation();
         // ...
-        app.UseMvc();
+        app.UseMvc(); // Or app.UseEndpoints(endpoints => ...) for ASP.NET Core 3.0+
     }
 }
 

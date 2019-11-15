@@ -6,7 +6,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+#if NETCOREAPP2_1
 using Microsoft.AspNetCore.Http.Internal;
+#endif
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -150,7 +152,12 @@ namespace RequestsSignature.AspNetCore
             byte[] body = null;
             if (signatureBodySourceComponents.Contains(SignatureBodySourceComponents.Body))
             {
+#if NETCOREAPP2_1
                 request.EnableRewind();
+#endif
+#if NETCOREAPP3_0
+                request.EnableBuffering();
+#endif
                 request.Body.Seek(0, SeekOrigin.Begin);
                 using (var memoryStream = _memoryStreamManager.GetStream())
                 {
@@ -240,10 +247,10 @@ namespace RequestsSignature.AspNetCore
             try
             {
                 var signaturePatternParserRegExpression = Regex.Escape(_options.SignaturePattern)
-                    .Replace("\\{ClientId}", @"(?<ClientId>[^:]{1,64})")
-                    .Replace("\\{Nonce}", @"(?<Nonce>[^:]{1,64})")
-                    .Replace("\\{Timestamp}", @"(?<Timestamp>[\d]{1,12})")
-                    .Replace("\\{SignatureBody}", @"(?<SignatureBody>[^:]+)");
+                    .Replace("\\{ClientId}", @"(?<ClientId>[^:]{1,64})", StringComparison.Ordinal)
+                    .Replace("\\{Nonce}", @"(?<Nonce>[^:]{1,64})", StringComparison.Ordinal)
+                    .Replace("\\{Timestamp}", @"(?<Timestamp>[\d]{1,12})", StringComparison.Ordinal)
+                    .Replace("\\{SignatureBody}", @"(?<SignatureBody>[^:]+)", StringComparison.Ordinal);
                 _signaturePatternParser = new Regex($"^{signaturePatternParserRegExpression}$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
             }
             catch (ArgumentException regexArgException)
