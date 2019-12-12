@@ -220,10 +220,23 @@ var client = new System.Net.Http.HttpClient(
             // These options must be the same as the server-side client options.
             ClientId = "9e616f36fde8424e9f71afa4a31e128a",
             ClientSecret = "df46ca91155142e99617a5fc5dea1f50",
-        }));
+        })
+    {
+        InnerHandler = new HttpClientHandler(),
+    });
 
 // Use the client normally
 var response = await client.GetAsync("...");
+
+// Or register it with the IHttpClientFactory
+services
+    .AddHttpClient<IService>()
+    .AddRequestsSignature(
+        new RequestsSignatureOptions
+        {
+            ClientId = StartupWithMiddleware.DefaultClientId,
+            ClientSecret = StartupWithMiddleware.DefaultClientSecret,
+        });
 ```
 
 ### Testing with [Postman](https://www.getpostman.com/)

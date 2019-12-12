@@ -22,16 +22,7 @@ namespace RequestsSignature.HttpClient.Tests
         [Fact]
         public async Task ItShouldSignAndValidateGetRequest()
         {
-            var client = new System.Net.Http.HttpClient(
-                new RequestsSignatureDelegatingHandler(
-                    new RequestsSignatureOptions
-                    {
-                        ClientId = StartupWithMiddleware.DefaultClientId,
-                        ClientSecret = StartupWithMiddleware.DefaultClientSecret,
-                    }))
-            {
-                BaseAddress = _fixture.ServerUri,
-            };
+            var client = CreateClientWithSignature(StartupWithMiddleware.DefaultClientId, StartupWithMiddleware.DefaultClientSecret);
 
             var response = await client.GetAsync(ApiController.GetSignatureValidationResultWithAuthenticationUri);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -55,10 +46,7 @@ namespace RequestsSignature.HttpClient.Tests
                 requestsSignatureOptions.SignatureBodySourceComponents.Add(sourceComponent);
             }
 
-            var client = new System.Net.Http.HttpClient(new RequestsSignatureDelegatingHandler(requestsSignatureOptions))
-            {
-                BaseAddress = _fixture.ServerUri,
-            };
+            var client = CreateClientWithSignature(requestsSignatureOptions);
 
             var response = await client.GetAsync(ApiController.GetSignatureValidationResultWithAuthenticationUri);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -72,16 +60,7 @@ namespace RequestsSignature.HttpClient.Tests
         [Fact]
         public async Task ItShouldRefuseAuthenticationIfWrongSignature()
         {
-            var client = new System.Net.Http.HttpClient(
-                new RequestsSignatureDelegatingHandler(
-                    new RequestsSignatureOptions
-                    {
-                        ClientId = StartupWithMiddleware.CustomClientId,
-                        ClientSecret = "wrongkey",
-                    }))
-            {
-                BaseAddress = _fixture.ServerUri,
-            };
+            var client = CreateClientWithSignature(StartupWithMiddleware.DefaultClientId, "wrongkey");
 
             var response = await client.GetAsync(ApiController.GetSignatureValidationResultWithAuthenticationUri);
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -90,16 +69,7 @@ namespace RequestsSignature.HttpClient.Tests
         [Fact]
         public async Task ItShouldAutoRetryOnClockSkew()
         {
-            var client = new System.Net.Http.HttpClient(
-                new RequestsSignatureDelegatingHandler(
-                    new RequestsSignatureOptions
-                    {
-                        ClientId = StartupWithMiddleware.DefaultClientId,
-                        ClientSecret = StartupWithMiddleware.DefaultClientSecret,
-                    }))
-            {
-                BaseAddress = _fixture.ServerUri,
-            };
+            var client = CreateClientWithSignature(StartupWithMiddleware.DefaultClientId, StartupWithMiddleware.DefaultClientSecret);
 
             var request = new HttpRequestMessage(HttpMethod.Get, ApiController.GetSignatureValidationResultWithAuthenticationUri);
             Func<HttpRequestMessage, long> timestampClock = (r) => DateTimeOffset.UtcNow.Subtract(TimeSpan.FromHours(1)).ToUnixTimeSeconds();
@@ -111,6 +81,26 @@ namespace RequestsSignature.HttpClient.Tests
 
             result.Status.Should().Be(SignatureValidationResultStatus.OK);
             result.ClientId.Should().Be(StartupWithMiddleware.DefaultClientId);
+        }
+
+        private System.Net.Http.HttpClient CreateClientWithSignature(string clientId, string clientSecret)
+            => CreateClientWithSignature(
+                new RequestsSignatureOptions
+                {
+                    ClientId = clientId,
+                    ClientSecret = clientSecret,
+                });
+
+        private System.Net.Http.HttpClient CreateClientWithSignature(RequestsSignatureOptions options)
+        {
+            return new System.Net.Http.HttpClient(
+                new RequestsSignatureDelegatingHandler(options)
+                {
+                    InnerHandler = new HttpClientHandler(),
+                })
+            {
+                BaseAddress = _fixture.ServerUri,
+            };
         }
     }
 }

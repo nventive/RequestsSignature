@@ -8,13 +8,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- Added support for the `IHttpClientBuilder` methods.
+
 ### Changed
+
+- [BREAKING]: Removed the `innerHandler` parameter in the `RequestsSignatureDelegatingHandler` constructor; you must now use the `InnerHandler` property.
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- Support for working with `IHttpClientFactory` ([Issue #2](https://github.com/nventive/RequestsSignature/issues/2)).
 
 ### Security
 
