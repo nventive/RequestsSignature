@@ -34,14 +34,11 @@ namespace RequestsSignature.HttpClient
         /// <param name="options">The signature options.</param>
         /// <param name="signatureBodySourceBuilder">The <see cref="ISignatureBodySourceBuilder"/>.</param>
         /// <param name="signatureBodySigner">The <see cref="ISignatureBodySigner"/>.</param>
-        /// <param name="innerHandler">The inner handler which is responsible for processing the HTTP response messages.</param>
         [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Not needed for HttpClient.")]
         public RequestsSignatureDelegatingHandler(
             RequestsSignatureOptions options,
             ISignatureBodySourceBuilder signatureBodySourceBuilder = null,
-            ISignatureBodySigner signatureBodySigner = null,
-            HttpMessageHandler innerHandler = null)
-            : base(innerHandler ?? new HttpClientHandler())
+            ISignatureBodySigner signatureBodySigner = null)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _signatureBodySourceBuilder = signatureBodySourceBuilder ?? new SignatureBodySourceBuilder();
