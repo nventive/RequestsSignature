@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 - Support for working with `IHttpClientFactory` ([Issue #2](https://github.com/nventive/RequestsSignature/issues/2)).
+- Postman pre-request script not working when using urlencoded bodies.
 
 ### Security
 

@@ -1,31 +1,63 @@
-const sdk = require('postman-collection');
+const sdk = require("postman-collection");
 
 // Parameters
-const signatureClientId = pm.variables.get("signatureClientId") || pm.environment.get("signatureClientId");
+const signatureClientId =
+  pm.variables.get("signatureClientId") ||
+  pm.environment.get("signatureClientId");
 if (!signatureClientId) {
-  throw new Error("Missing signatureClientId variable to configure the client id for request signature.");
+  throw new Error(
+    "Missing signatureClientId variable to configure the client id for request signature."
+  );
 }
-const signatureClientSecret = pm.variables.get("signatureClientSecret") || pm.environment.get("signatureClientSecret");
+const signatureClientSecret =
+  pm.variables.get("signatureClientSecret") ||
+  pm.environment.get("signatureClientSecret");
 if (!signatureClientSecret) {
-  throw new Error("Missing signatureClientSecret variable to configure the secret for request signature.");
+  throw new Error(
+    "Missing signatureClientSecret variable to configure the secret for request signature."
+  );
 }
+const signatureDebug =
+  pm.variables.get("signatureDebug") || pm.environment.get("signatureDebug");
 
-const signatureHeaderName = pm.variables.get("signatureHeaderName") || pm.environment.get("signatureHeaderName") || "X-RequestSignature";
-let signatureBodySourceComponents = pm.variables.get("signatureBodySourceComponents") || pm.environment.get("signatureBodySourceComponents") || ["Nonce", "Timestamp", "Method", "Scheme", "Host", "LocalPath", "QueryString", "Body"];
+const signatureHeaderName =
+  pm.variables.get("signatureHeaderName") ||
+  pm.environment.get("signatureHeaderName") ||
+  "X-RequestSignature";
+let signatureBodySourceComponents = pm.variables.get(
+  "signatureBodySourceComponents"
+) ||
+  pm.environment.get("signatureBodySourceComponents") || [
+    "Nonce",
+    "Timestamp",
+    "Method",
+    "Scheme",
+    "Host",
+    "LocalPath",
+    "QueryString",
+    "Body"
+  ];
 if (typeof signatureBodySourceComponents === "string") {
   signatureBodySourceComponents = JSON.parse(signatureBodySourceComponents);
 }
-const signaturePattern = pm.variables.get("signaturePattern") || pm.environment.get("signaturePattern") || "{ClientId}:{Nonce}:{Timestamp}:{SignatureBody}";
+const signaturePattern =
+  pm.variables.get("signaturePattern") ||
+  pm.environment.get("signaturePattern") ||
+  "{ClientId}:{Nonce}:{Timestamp}:{SignatureBody}";
 
 // Variables
 const timestamp = Math.round(new Date() / 1000);
-const nonce = require('uuid').v4();
-const resolvedRequest = new sdk.Request(pm.request.toJSON()).toObjectResolved(null, [pm.variables.toObject()], { ignoreOwnVariables: true });
+const nonce = require("uuid").v4();
+const resolvedRequest = new sdk.Request(
+  pm.request.toJSON()
+).toObjectResolved(null, [pm.variables.toObject()], {
+  ignoreOwnVariables: true
+});
 const url = new sdk.Url(resolvedRequest.url);
 
 // Utilities
-const utf8Bytes = (input) => input.split("").map(c => c.charCodeAt(0));
-const byteArrayToWordArray = (byteArray) => {
+const utf8Bytes = input => input.split("").map(c => c.charCodeAt(0));
+const byteArrayToWordArray = byteArray => {
   const wordArray = [];
   for (let i = 0; i < byteArray.length; i++) {
     wordArray[(i / 4) | 0] |= byteArray[i] << (24 - 8 * i);
@@ -34,7 +66,10 @@ const byteArrayToWordArray = (byteArray) => {
   return CryptoJS.lib.WordArray.create(wordArray, byteArray.length);
 };
 
-if (resolvedRequest.header && resolvedRequest.header.find(x => x.key === signatureHeaderName)) {
+if (
+  resolvedRequest.header &&
+  resolvedRequest.header.find(x => x.key === signatureHeaderName)
+) {
   return;
 }
 
@@ -44,18 +79,26 @@ let signatureBodySource = [];
 signatureBodySourceComponents.forEach(component => {
   switch (component) {
     case "Method":
-      signatureBodySource.push(...utf8Bytes(resolvedRequest.method.toUpperCase()));
+      signatureBodySource.push(
+        ...utf8Bytes(resolvedRequest.method.toUpperCase())
+      );
       break;
     case "Scheme":
-      let scheme = url.getHost().split("://")[0];
+      let scheme = url.getRaw().split("://")[0];
       signatureBodySource.push(...utf8Bytes(scheme));
       break;
     case "Host":
-      let host = url.getHost().split("://")[1].split(":")[0];
+      let host = url
+        .getRaw()
+        .split("://")[1]
+        .split(":")[0];
       signatureBodySource.push(...utf8Bytes(host));
       break;
     case "Port":
-      let port = url.getHost().split("://")[1].split(":")[1];
+      let port = url
+        .getRaw()
+        .split("://")[1]
+        .split(":")[1];
       if (port) {
         signatureBodySource.push(...utf8Bytes(port));
       }
@@ -74,7 +117,16 @@ signatureBodySourceComponents.forEach(component => {
       break;
     case "Body":
       if (resolvedRequest.body) {
-        const requestBody = new sdk.RequestBody(resolvedRequest.body);
+        let requestBody = new sdk.RequestBody(resolvedRequest.body);
+        if (requestBody.urlencoded) {
+          // This is a patch for faulty Postman RequestBody implementation.
+          requestBody.urlencoded.remove(x => x.disabled);
+          requestBody.urlencoded.each(x => {
+            if (x.value) {
+              x.value = encodeURI(x.value);
+            }
+          });
+        }
         if (requestBody.toString()) {
           signatureBodySource.push(...utf8Bytes(requestBody.toString()));
         }
@@ -88,17 +140,32 @@ signatureBodySourceComponents.forEach(component => {
       break;
     default:
       if (!component.startsWith("Header")) {
-        throw new Error(`Unrecognized signature body source component ${component}.`);
+        throw new Error(
+          `Unrecognized signature body source component ${component}.`
+        );
       }
       const headerName = component.substr("Header".length);
-      const header = resolvedRequest.header && resolvedRequest.header.find(x => x.key === headerName);
+      const header =
+        resolvedRequest.header &&
+        resolvedRequest.header.find(x => x.key === headerName);
       if (header && header.value) {
         signatureBodySource.push(...utf8Bytes(header.value));
       }
   }
 });
 
-const signatureBody = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(byteArrayToWordArray(signatureBodySource), signatureClientSecret));
+if (signatureDebug) {
+  console.info(
+    "SignatureBodySource",
+    signatureBodySource.map(x => String.fromCharCode(x)).join("")
+  );
+}
+const signatureBody = CryptoJS.enc.Base64.stringify(
+  CryptoJS.HmacSHA256(
+    byteArrayToWordArray(signatureBodySource),
+    signatureClientSecret
+  )
+);
 
 const signature = signaturePattern
   .replace("{ClientId}", signatureClientId)
