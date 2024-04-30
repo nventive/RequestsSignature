@@ -10,6 +10,8 @@ It consists of .NET Standard 2.0 assemblies to help implement:
 
 Additionally, it provides a [Postman](https://www.getpostman.com/) Pre-request script to help testing APIs with signature validation.
 
+For front-end projects in Flutter, use the [RequestsSignature-Dart](https://github.com/nventive/RequestsSignature-Dart) library to implement [HMAC](https://en.wikipedia.org/wiki/HMAC) signatures.
+
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Build Status](https://dev.azure.com/nventive-public/nventive/_apis/build/status/nventive.RequestsSignature?branchName=master)](https://dev.azure.com/nventive-public/nventive/_build/latest?definitionId=5&branchName=master)
 ![Nuget](https://img.shields.io/nuget/v/RequestsSignature.Core.svg)
