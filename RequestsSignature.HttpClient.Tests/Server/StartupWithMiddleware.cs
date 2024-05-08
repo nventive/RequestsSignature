@@ -45,25 +45,15 @@ namespace RequestsSignature.HttpClient.Tests.Server
             services.AddMemoryCache();
             services.AddSingleton<INonceRepository, MemoryCacheNonceRepository>();
             services.AddRequestsSignatureValidation();
-#if NETCOREAPP2_2
-            services.AddMvc();
-#endif
 
-#if NETCOREAPP3_0
             services.AddControllers();
-#endif
         }
 
         public void Configure(IApplicationBuilder app)
         {
             app.UseRequestsSignatureValidation();
-#if NETCOREAPP2_2
-            app.UseMvc();
-#endif
-#if NETCOREAPP3_0
             app.UseRouting();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
-#endif
         }
     }
 }
