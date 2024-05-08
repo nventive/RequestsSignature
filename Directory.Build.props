@@ -9,7 +9,7 @@
     <LangVersion>7.3</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
-    <NoWarn>1701;1702;1998</NoWarn>
+    <NoWarn>1701;1702;1998;NU5048</NoWarn>
     <TemplateVersion>0.1.0-beta0014</TemplateVersion>
     <PackageIconUrl>https://nventive-email-assets.s3.amazonaws.com/packages/nv-package-logo%400%2C25x.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/nventive/RequestsSignature</PackageProjectUrl>
