@@ -112,7 +112,7 @@ var validationResults = context.Features.Get<IRequestsSignatureFeature>().Valida
 
 2 additional MVC Filters are provided for convenience:
 
-- `RequireRequestsSignatureValidationAttribute`: it is an [Action Filter](https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/filters?view=aspnetcore-2.2#action-filters) that can force the validation to be performed:
+- `RequireRequestsSignatureValidationAttribute`: it is an [Action Filter](https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/filters?view=aspnetcore-6.0#action-filters) that can force the validation to be performed:
 
 ```csharp
 [HttpGet("my-action")]
@@ -153,7 +153,7 @@ This works in the same way as the `[AllowAnonymous]` filter for the authenticati
 
 ### Implement as part of ASP.NET Core Authentication
 
-Alternatively, you can implement requests signature validation as an ASP.NET Core Authentication scheme. This allows you to consider requests signature as a means to authenticate requests, the same way that [`AddJwtBearer`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.jwtbearerextensions.addjwtbearer?view=aspnetcore-2.2) authenticates requests using JSON Web Tokens.
+Alternatively, you can implement requests signature validation as an ASP.NET Core Authentication scheme. This allows you to consider requests signature as a means to authenticate requests, the same way that [`AddJwtBearer`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.jwtbearerextensions.addjwtbearer?view=aspnetcore-6.0) authenticates requests using JSON Web Tokens.
 
 To do so, configure the authentication in the `Startup` class:
 
@@ -287,7 +287,7 @@ replay attacks for the duration of the clock skew.
 To enable nonce check, you must configure a `INonceRepository` that is responsible
 for storing and checking the nonce at least for the duration of twice the clock skew.
 
-Two implementations are provided: one that relies on the [`IMemoryCache`](https://docs.microsoft.com/en-us/aspnet/core/performance/caching/memory?view=aspnetcore-2.2), and another that relies on the [`IDistributedCache`](https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed?view=aspnetcore-2.2). Consider using one of these
+Two implementations are provided: one that relies on the [`IMemoryCache`](https://docs.microsoft.com/en-us/aspnet/core/performance/caching/memory?view=aspnetcore-6.0), and another that relies on the [`IDistributedCache`](https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed?view=aspnetcore-6.0). Consider using one of these
 (or your own implementation) to enable nonce management.
 
 ```csharp
