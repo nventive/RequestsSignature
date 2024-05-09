@@ -73,7 +73,7 @@ namespace RequestsSignature.HttpClient.Tests
 
             var request = new HttpRequestMessage(HttpMethod.Get, ApiController.GetSignatureValidationResultWithAuthenticationUri);
             Func<HttpRequestMessage, long> timestampClock = (r) => DateTimeOffset.UtcNow.Subtract(TimeSpan.FromHours(1)).ToUnixTimeSeconds();
-            request.Properties[RequestsSignatureDelegatingHandler.TimestampClockProperty] = timestampClock;
+            request.Options.Set(new HttpRequestOptionsKey<Func<HttpRequestMessage, long>>(RequestsSignatureDelegatingHandler.TimestampClockProperty), timestampClock);
             var response = await client.SendAsync(request);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 

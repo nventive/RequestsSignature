@@ -6,9 +6,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-#if NETCOREAPP2_1
-using Microsoft.AspNetCore.Http.Internal;
-#endif
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -152,12 +149,8 @@ namespace RequestsSignature.AspNetCore
             byte[] body = null;
             if (signatureBodySourceComponents.Contains(SignatureBodySourceComponents.Body))
             {
-#if NETCOREAPP2_1
-                request.EnableRewind();
-#endif
-#if NETCOREAPP3_0
                 request.EnableBuffering();
-#endif
+
                 request.Body.Seek(0, SeekOrigin.Begin);
                 using (var memoryStream = _memoryStreamManager.GetStream())
                 {

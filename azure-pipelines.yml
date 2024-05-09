@@ -1,15 +1,30 @@
+trigger:
+  branches:
+    include:
+    - main
 
 pool:
-  vmImage: 'windows-2019'
+  vmImage: 'windows-2022'
 
 variables:
   buildConfiguration: 'Release'
 
+  # Pipeline configuration (Disable shallow fetch).
+  # See https://dev.to/kkazala/azure-devops-pipelines-shallow-fetch-1-is-now-default-4656 for more details.
+  # See https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/pipeline-options-for-git?view=azure-devops&tabs=yaml#shallow-fetch for more details.
+  Agent.Source.Git.ShallowFetchDepth: 0
+
 steps:
-- task: GitVersion@4
-  displayName: Git Version
+- task: gitversion/setup@0
   inputs:
-    updateAssemblyInfo: false
+    versionSpec: '5.12.0'
+  displayName: 'Install GitVersion'
+
+- task: gitversion/execute@0
+  inputs:
+    useConfigFile: true
+    configFilePath: GitVersion.yml
+  displayName: 'Calculate Version'
 
 - script: dotnet build --configuration $(buildConfiguration) -p:Version=$(GitVersion.NuGetVersionV2) -p:FileVersion=$(GitVersion.AssemblySemVer) -p:InformationalVersion=$(GitVersion.InformationalVersion)
   displayName: Build
@@ -23,7 +38,7 @@ steps:
     testResultsFormat: 'VSTest'
     testResultsFiles: '**/*.trx'
     mergeTestResults: true
-    testRunTitle: 'Unit tests'
+    testRunTitle: 'Unit Tests'
 
 - script: dotnet pack --no-build --configuration $(buildConfiguration) -p:Version=$(GitVersion.NuGetVersionV2) --output $(build.artifactStagingDirectory)
   displayName: Pack
@@ -32,15 +47,15 @@ steps:
   displayName: 'Publish Build Artifacts'
 
 - task: NuGetToolInstaller@1
-  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq('true', variables['forcePushNuget'])))
+  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq('true', variables['forcePushNuget'])))
   inputs:
     versionSpec: '>= 4.9'
     checkLatest: true
 
 - task: NuGetCommand@2
-  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq('true', variables['forcePushNuget'])))
+  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq('true', variables['forcePushNuget'])))
   inputs:
     command: 'push'
     packagesToPush: '$(build.artifactStagingDirectory)/**/*.nupkg;!$(build.artifactStagingDirectory)/**/*.snupkg'
     nuGetFeedType: 'external'
-    publishFeedCredentials: 'nventive'
+    publishFeedCredentials: 'NuGet.org - nventive'

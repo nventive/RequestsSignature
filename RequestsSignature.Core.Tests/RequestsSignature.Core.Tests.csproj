@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -20,5 +20,4 @@
   <ItemGroup>
     <ProjectReference Include="..\RequestsSignature.Core\RequestsSignature.Core.csproj" />
   </ItemGroup>
-
 </Project>
